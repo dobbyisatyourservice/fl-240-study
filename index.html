@@ -7,15 +7,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>FL 2-40 Health Study</title>
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--text:#16181d;--muted:#5d6470;--line:#e2e5ea;--accent:#1d4ed8;--accent-soft:#e8eefc;--good:#15803d;--good-soft:#e5f6ea;--bad:#b91c1c;--bad-soft:#fde8e8;--warn:#b45309;--warn-soft:#fdf1e1}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--card:#181b21;--text:#eceef2;--muted:#9aa1ad;--line:#2a2f38;--accent:#7aa2ff;--accent-soft:#1d2740;--good:#4ade80;--good-soft:#123222;--bad:#f87171;--bad-soft:#3a1717;--warn:#fbbf24;--warn-soft:#3a2c10}}
+:root{color-scheme:dark;--bg:#07090e;--card:#11151d;--card2:#161b26;--text:#eef1f6;--muted:#8d97a8;--line:#222a37;--accent:#38bdf8;--accent2:#a78bfa;--accent-soft:rgba(56,189,248,.12);--good:#4ade80;--good-soft:rgba(74,222,128,.12);--bad:#fb7185;--bad-soft:rgba(251,113,133,.13);--warn:#fbbf24;--warn-soft:rgba(251,191,36,.12);--grad:linear-gradient(135deg,#38bdf8,#a78bfa)}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
-header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 0 0}
+html,body{margin:0;background:var(--bg) radial-gradient(900px 500px at 85% -10%,rgba(167,139,250,.16),transparent 60%) no-repeat,var(--bg) radial-gradient(700px 400px at -10% 10%,rgba(56,189,248,.12),transparent 60%) no-repeat;background-color:var(--bg);background-attachment:fixed;color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:5;background:rgba(7,9,14,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 0 0}
 .wrap{max-width:720px;margin:0 auto;padding:0 16px}
 .top{display:flex;align-items:center;gap:8px;padding:10px 0 6px}
 .top h1{font-size:17px;margin:0;flex:1;white-space:nowrap}
-select{font:inherit;font-size:15px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);max-width:58vw}
+select{font:inherit;font-size:15px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);max-width:44vw}
 nav{display:flex;gap:2px;padding-bottom:8px}
 nav button{flex:1 1 auto;font:inherit;font-weight:600;font-size:13px;padding:9px 3px;border:0;border-radius:10px;background:transparent;color:var(--muted)}
 nav button.on{background:var(--accent-soft);color:var(--accent)}
@@ -32,8 +31,8 @@ main{padding:14px 0 90px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .btn{font:inherit;font-weight:600;padding:11px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)}
 .btn:disabled{opacity:.45}
-.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
-@media (prefers-color-scheme:dark){.btn.pri{color:#0f1115}}
+.btn.pri{background:var(--grad);border-color:transparent;color:#07090e;box-shadow:0 6px 20px rgba(56,189,248,.25)}
+
 .btn.grow{flex:1}.btn.sm{padding:7px 12px;font-size:14px}
 .toggles{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-bottom:12px}
 .toggles label{display:flex;align-items:center;gap:6px}
@@ -85,11 +84,52 @@ ul.tight{margin:6px 0;padding-left:20px}
 .dots{letter-spacing:2px;color:var(--good)}
 .streak{font-weight:700;color:var(--warn)}
 .pop{animation:pop .35s ease}@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+
+.card{border-radius:18px;background:linear-gradient(180deg,var(--card2),var(--card))}
+.opt{background:var(--card2);transition:transform .08s}.opt:active{transform:scale(.98)}
+.btn:active{transform:scale(.97)}
+.logo{display:flex;align-items:center;gap:8px;flex:1;background:none;border:0;color:var(--text);font:inherit;padding:0;text-align:left}
+.logo b{white-space:nowrap;font-size:16px;letter-spacing:.2px}.logo small{display:block;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;line-height:1}
+.hero{text-align:center;padding:18px 4px 6px}
+.hero .wolf{display:block;margin:0 auto;width:96px;height:96px;filter:drop-shadow(0 8px 30px rgba(56,189,248,.45))}
+.eyebrow{display:inline-block;margin-top:10px;font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero h2{font-size:30px;line-height:1.12;margin:10px 0 8px;letter-spacing:-.5px;font-weight:800}
+.hero h2 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);margin:0 auto;max-width:420px;font-size:15px}
+.count{display:flex;justify-content:center;gap:8px;margin:18px 0 6px}
+.count div{min-width:66px;padding:10px 6px;border-radius:14px;background:var(--card2);border:1px solid var(--line)}
+.count b{display:block;font-size:24px;font-variant-numeric:tabular-nums;line-height:1.1}
+.count small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.kpis div{padding:12px 8px;border-radius:14px;background:var(--card2);border:1px solid var(--line);text-align:center}
+.kpis b{display:block;font-size:22px}.kpis small{font-size:12px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.tile{position:relative;text-align:left;font:inherit;color:var(--text);padding:16px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,var(--card2),var(--card));min-height:112px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .08s}
+.tile:active{transform:scale(.97)}
+.tile .ic{font-size:26px;line-height:1}
+.tile b{font-size:17px;display:block;margin-top:10px}.tile small{color:var(--muted);font-size:13px}
+.tile.wide{grid-column:1/-1;min-height:0;flex-direction:row;justify-content:flex-start;align-items:center;gap:14px;background:var(--grad);color:#07090e;border:0;box-shadow:0 10px 30px rgba(56,189,248,.25)}
+.tile.wide small{color:rgba(7,9,14,.7)}.tile.wide b{margin:0}
+.tile .badge{position:absolute;top:12px;right:12px;font-size:12px;line-height:22px;min-width:22px}
+.foot{text-align:center;color:var(--muted);font-size:12px;margin-top:22px;letter-spacing:1px}
+.timer{top:104px}
+
+body.splash-on header{display:none}
+body.splash-on main{padding-top:0}
+.splash{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:calc(env(safe-area-inset-top) + 8px) 0 24px}
+.hero-wrap{margin:0 -16px}.hero-art{display:block;width:100%;height:auto;max-height:46svh}
+.splash .hero{padding-top:0;margin-top:-18px;position:relative}
+.btn.go{display:block;width:100%;max-width:420px;margin:18px auto 0;font-size:18px;padding:16px;border-radius:16px}
+.feat{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:16px}
+.feat span{font-size:12px;color:var(--muted);padding:5px 10px;border-radius:99px;border:1px solid var(--line);background:var(--card)}
+.dash-h{padding:4px 0 2px}.dash-h h3{font-size:24px;margin:2px 0 4px;letter-spacing:-.3px}
+.mini{font-size:14px;color:var(--muted)}
+.eyebrow{display:block}
 </style>
 </head>
 <body>
 <header><div class="wrap">
-  <div class="top"><h1>FL 2-40 Health</h1><select id="ch"></select></div>
+  <div class="top"><button class="logo" onclick="setView('dash')"><svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="wg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs><polygon fill="url(#wg2)" points="9,5 24,21 40,21 55,5 53,30 45,44 32,59 19,44 11,30"/><polygon fill="#07090e" opacity=".35" points="13,11 22,21 15,25"/><polygon fill="#07090e" opacity=".35" points="51,11 42,21 49,25"/><polygon fill="#ffffff" opacity=".22" points="24,21 40,21 32,33"/><polygon fill="#07090e" points="18,30 28,33 21,36"/><polygon fill="#07090e" points="46,30 36,33 43,36"/><polygon fill="#ffffff" opacity=".3" points="25,39 39,39 32,52"/><polygon fill="#07090e" points="28.5,47 35.5,47 32,52"/></svg><span><small>Wolf Prep</small><b>FL 2-40 Health</b></span></button><select id="ch"></select></div>
   <nav><button data-v="quiz">Quiz</button><button data-v="exam">Exam</button><button data-v="mist">Mistakes<span id="mbadge" class="badge"></span></button><button data-v="cards">Cards</button><button data-v="stats">Stats</button><button data-v="guides">Guides</button></nav>
 </div></header>
 <main class="wrap" id="app"><p class="empty">Loading…</p></main>
@@ -103,7 +143,8 @@ const inl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const pct=(a,b)=>b?Math.round(100*a/b):0;
 const PASS=70;
-let D, QBY={}, TBY={}, view=store.get('view','quiz'), ch=store.get('ch','all');
+const WOLF=`<svg class="wolf" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="wg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs><polygon fill="url(#wg)" points="9,5 24,21 40,21 55,5 53,30 45,44 32,59 19,44 11,30"/><polygon fill="#07090e" opacity=".35" points="13,11 22,21 15,25"/><polygon fill="#07090e" opacity=".35" points="51,11 42,21 49,25"/><polygon fill="#ffffff" opacity=".22" points="24,21 40,21 32,33"/><polygon fill="#07090e" points="18,30 28,33 21,36"/><polygon fill="#07090e" points="46,30 36,33 43,36"/><polygon fill="#ffffff" opacity=".3" points="25,39 39,39 32,52"/><polygon fill="#07090e" points="28.5,47 35.5,47 32,52"/></svg>`;
+let D, QBY={}, TBY={}, view='home', ch=store.get('ch','all');
 let results=store.get('results',{}), known=store.get('known',{}), exams=store.get('exams',[]), exam=store.get('exam',null);
 let opts=store.get('opts',{shuffle:true,missed:false,unknown:false,fshuffle:true});
 let examSize=store.get('examSize',50);
@@ -127,7 +168,7 @@ fetch('data.json').then(r=>r.json()).then(d=>{D=d;D.questions=D.questions.filter
 
 const qid=q=>q.ch+'-'+q.n, tid=t=>t.ch+'-'+t.t;
 const inCh=x=>ch==='all'||x.ch==ch;
-function setView(v){view=v;store.set('view',v);guideOpen=null;reset()}
+function setView(v){view=v;guideOpen=null;reset()}
 function reset(){
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
   idx=0;flipped=false;answered=null;sessR=0;sessN=0;clearInterval(tick);
@@ -137,11 +178,48 @@ function reset(){
 }
 function toggle(k,label){return `<label><input type="checkbox" ${opts[k]?'checked':''} onchange="opts.${k}=this.checked;store.set('opts',opts);reset()">${label}</label>`}
 function render(){
+  document.body.classList.toggle('splash-on',view==='home');
   $('#toTop').style.display=view==='guides'&&guideOpen?'block':'none';
-  ({quiz:renderQuiz,cards:renderCards,guides:renderGuides,exam:renderExam,stats:renderStats,mist:renderMist})[view]();
+  ({home:renderHome,dash:renderDash,quiz:renderQuiz,cards:renderCards,guides:renderGuides,exam:renderExam,stats:renderStats,mist:renderMist})[view]();
 }
 function chStats(n){const pool=D.questions.filter(q=>n==='all'||q.ch==n);let done=0,right=0;pool.forEach(q=>{const r=results[qid(q)];if(r!==undefined){done++;right+=r}});return {total:pool.length,done,right,missed:done-right}}
 function barClass(p){return p>=80?'g':p>=PASS?'':p>=50?'w':'b'}
+
+/* ---------- Home ---------- */
+const EXAM_AT=Date.parse('2026-11-23T19:00:00Z');
+function renderDash(){
+  const all=chStats('all'),last=exams[exams.length-1],nm=Object.keys(mist).length,tk=D.terms.filter(t=>known[tid(t)]).length;
+  app.innerHTML=`<div class="dash-h"><div class="eyebrow">Wolf Prep</div><h3>Choose your training</h3><div class="mini" id="cd"></div></div>
+  <div class="kpis"><div><b>${all.done?pct(all.right,all.done)+'%':'–'}</b><small>accuracy</small></div><div><b>${last?last.score+'%':'–'}</b><small>last exam</small></div><div><b>${nm}</b><small>mistakes</small></div></div>
+  <div class="tiles">
+   <button class="tile wide" onclick="setView('exam')"><span class="ic">⏱️</span><span><b>Take a mock exam</b><small>Timed, graded, 70% to pass</small></span></button>
+   <button class="tile" onclick="setView('quiz')"><span class="ic">🎯</span><span><b>Quiz</b><small>${all.done}/${all.total} done</small></span></button>
+   <button class="tile" onclick="setView('mist')">${nm?`<span class="badge">${nm}</span>`:''}<span class="ic">🔁</span><span><b>Mistakes</b><small>${nm?'Clear your misses':'All clear'}</small></span></button>
+   <button class="tile" onclick="setView('cards')"><span class="ic">🃏</span><span><b>Flashcards</b><small>${tk}/${D.terms.length} known</small></span></button>
+   <button class="tile" onclick="setView('guides')"><span class="ic">📖</span><span><b>Guides</b><small>11 chapters</small></span></button>
+   <button class="tile" onclick="setView('stats')" style="grid-column:1/-1;min-height:0"><span class="ic" style="display:none"></span><span><b style="margin:0">📊 Stats by chapter</b><small>See your weakest chapters</small></span></button>
+  </div>
+  <div class="foot">WOLF PREP · STUDY HARD, HUNT SMART 🐺</div>`;
+  runCd();
+}
+function runCd(){
+  const cd=()=>{const el=$('#cd');if(!el){clearInterval(tick);return}let s=Math.max(0,Math.floor((EXAM_AT-Date.now())/1000));
+    if(!s){el.innerHTML='<div style="padding:10px 16px"><b>Exam day!</b><small>You got this</small></div>';return}
+    const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;
+    el.innerHTML=el.classList.contains('mini')?`⏳ Exam in ${d?d+'d ':''}${h}h ${String(m).padStart(2,'0')}m`:(d?`<div><b>${d}</b><small>days</small></div>`:'')+`<div><b>${h}</b><small>hours</small></div><div><b>${String(m).padStart(2,'0')}</b><small>min</small></div><div><b>${String(x).padStart(2,'0')}</b><small>sec</small></div>`};
+  cd();tick=setInterval(cd,1000);
+}
+function renderHome(){
+  app.innerHTML=`<div class="splash"><div class="hero-wrap"><svg class="hero-art" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wolf illustration"><defs><radialGradient id="hglow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#38bdf8" stop-opacity=".5"/><stop offset=".6" stop-color="#a78bfa" stop-opacity=".18"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient><radialGradient id="hmoon" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0b1020"/></radialGradient></defs><circle cx="200" cy="135" r="160" fill="url(#hglow)"/><circle cx="200" cy="130" r="112" fill="url(#hmoon)" stroke="#38bdf8" stroke-opacity=".35" stroke-width="1.5"/><g fill="#fff" opacity=".85"><circle cx="40" cy="40" r="1.5"/><circle cx="85" cy="90" r="1"/><circle cx="355" cy="45" r="1.7"/><circle cx="372" cy="140" r="1"/><circle cx="52" cy="150" r="1.2"/><circle cx="125" cy="22" r="1.1"/><circle cx="300" cy="18" r="1"/><circle cx="20" cy="230" r="1"/></g><path fill="#0e1424" d="M0 246 L55 214 L92 228 L140 200 L200 232 L262 202 L318 230 L400 206 L400 300 L0 300Z"/><path fill="#07090e" d="M0 300 L0 266 C70 254 130 262 200 250 C270 260 330 254 400 266 L400 300Z"/><g transform="translate(118,28) scale(.82)"><polygon points="30,10 28,80 55,70" fill="#38bdf8"/><polygon points="30,10 55,70 70,60" fill="#0369a1"/><polygon points="70,60 100,50 100,95" fill="#7dd3fc"/><polygon points="55,70 70,60 100,95 62,100" fill="#0ea5e9"/><polygon points="28,80 55,70 62,100 20,120" fill="#7dd3fc"/><polygon points="20,120 62,100 80,150 40,150" fill="#38bdf8"/><polygon points="62,100 100,95 100,130 80,150" fill="#0ea5e9"/><polygon points="80,150 100,130 100,160" fill="#7dd3fc"/><polygon points="40,150 80,150 70,175" fill="#0369a1"/><polygon points="70,175 80,150 100,160 100,205" fill="#38bdf8"/><polygon points="20,120 40,150 30,140" fill="#0369a1"/><polygon points="170,10 172,80 145,70" fill="#a78bfa"/><polygon points="170,10 145,70 130,60" fill="#5b21b6"/><polygon points="130,60 100,50 100,95" fill="#c4b5fd"/><polygon points="145,70 130,60 100,95 138,100" fill="#8b5cf6"/><polygon points="172,80 145,70 138,100 180,120" fill="#c4b5fd"/><polygon points="180,120 138,100 120,150 160,150" fill="#a78bfa"/><polygon points="138,100 100,95 100,130 120,150" fill="#8b5cf6"/><polygon points="120,150 100,130 100,160" fill="#c4b5fd"/><polygon points="160,150 120,150 130,175" fill="#5b21b6"/><polygon points="130,175 120,150 100,160 100,205" fill="#a78bfa"/><polygon points="180,120 160,150 170,140" fill="#5b21b6"/><polygon points="58,98 86,108 66,114" fill="#07090e"/><polygon points="142,98 114,108 134,114" fill="#07090e"/><circle cx="68" cy="106" r="2.2" fill="#e0f2fe"/><circle cx="132" cy="106" r="2.2" fill="#e0f2fe"/><polygon points="86,158 114,158 100,174" fill="#07090e"/><polygon points="100,95 100,160" stroke="#07090e" stroke-opacity=".15"/></g></svg></div>
+  <div class="hero"><div class="eyebrow">Powered by the Wolf</div>
+  <h2>Get ready for your <span>Florida 2-40 Health</span> License Exam</h2>
+  <p>238 practice questions, 340 key terms, timed mock exams and all 11 chapter guides. Built for studying on the go.</p>
+  <div class="count" id="cd"></div>
+  <button class="btn pri go" onclick="setView('dash')">Get started →</button>
+  <div class="feat"><span>🎯 Quiz</span><span>⏱️ Mock exams</span><span>🔁 Mistakes</span><span>🃏 Cards</span></div>
+  <div class="foot">WOLF PREP · STUDY HARD, HUNT SMART 🐺</div></div></div>`;
+  runCd();
+}
 
 /* ---------- Practice ---------- */
 function renderQuiz(){
