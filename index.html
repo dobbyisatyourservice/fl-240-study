@@ -280,11 +280,10 @@ function chStats(n){const pool=D.questions.filter(q=>n==='all'||q.ch==n);let don
 function barClass(p){return p>=80?'g':p>=PASS?'':p>=50?'w':'b'}
 
 /* ---------- Home ---------- */
-const EXAM_AT=Date.parse('2026-11-23T19:00:00Z');
 function renderDash(){
   const ring=(p,label,sub,col)=>`<div class="ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--line)" stroke-width="3"/><circle class="arc" cx="18" cy="18" r="15.9" fill="none" stroke="${col}" stroke-width="3" stroke-linecap="round" stroke-dasharray="${p} 100" transform="rotate(-90 18 18)"/></svg><b>${label}</b><small>${sub}</small></div>`;
   const all=chStats('all'),last=exams[exams.length-1],nm=Object.keys(mist).length,tk=D.terms.filter(t=>known[tid(t)]).length;
-  app.innerHTML=`<div class="dash-h"><div class="eyebrow">Wolf Prep</div><h3>Choose your training</h3><div class="mini" id="cd"></div></div>
+  app.innerHTML=`<div class="dash-h"><div class="eyebrow">Wolf Prep</div><h3>Choose your training</h3></div>
   <div class="rings">${ring(pct(all.done,all.total),pct(all.done,all.total)+'%','covered','#38bdf8')}${ring(all.done?pct(all.right,all.done):0,all.done?pct(all.right,all.done)+'%':'–','accuracy',all.done&&pct(all.right,all.done)>=PASS?'#4ade80':'#fbbf24')}${ring(pct(tk,D.terms.length),pct(tk,D.terms.length)+'%','cards known','#a78bfa')}</div>
   <div class="sect">📝 Exam</div>
   <div class="tiles">
@@ -303,14 +302,6 @@ function renderDash(){
    <button class="tile" onclick="setView('stats')" style="min-height:0"><span><b style="margin:0">📊 Stats</b><small>Weakest chapters</small></span></button>
   </div>
   <div class="foot">WOLF PREP · STUDY HARD, HUNT SMART 🐺</div>`;
-  runCd();
-}
-function runCd(){
-  const cd=()=>{const el=$('#cd');if(!el){clearInterval(tick);return}let s=Math.max(0,Math.floor((EXAM_AT-Date.now())/1000));
-    if(!s){el.innerHTML='<div style="padding:10px 16px"><b>Exam day!</b><small>You got this</small></div>';return}
-    const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;
-    el.innerHTML=el.classList.contains('mini')?`⏳ Exam in ${d?d+'d ':''}${h}h ${String(m).padStart(2,'0')}m`:(d?`<div><b>${d}</b><small>days</small></div>`:'')+`<div><b>${h}</b><small>hours</small></div><div><b>${String(m).padStart(2,'0')}</b><small>min</small></div><div><b>${String(x).padStart(2,'0')}</b><small>sec</small></div>`};
-  cd();tick=setInterval(cd,1000);
 }
 function profileBox(){
   if(ACTIVE)return `<div class="welcome">Welcome back, <b>${esc(ACTIVE.split(' ')[0])}</b> 👋</div><button class="btn pri go" onclick="setView('dash')">Continue studying →</button>
@@ -324,11 +315,9 @@ function renderHome(){
   <div class="hero"><div class="eyebrow">Powered by the Wolf</div>
   <h2>Get ready for your <span>Florida 2-40 Health</span> License Exam</h2>
   <p>238 practice questions, 340 key terms, timed mock exams and all 11 chapter guides. Built for studying on the go.</p>
-  <div class="count" id="cd"></div>
   ${profileBox()}
   <div class="feat"><span>🎯 Quiz</span><span>⏱️ Mock exams</span><span>🔁 Mistakes</span><span>🃏 Cards</span></div>
   <div class="foot">WOLF PREP · STUDY HARD, HUNT SMART 🐺</div></div></div>`;
-  runCd();
 }
 
 /* ---------- Practice ---------- */
