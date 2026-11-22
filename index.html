@@ -5,7 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1d4ed8">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>FL 2-40 Health Study</title>
+<title>Wolf Prep: FL 2-40 Health</title>
+<meta name="description" content="Get ready for your Florida 2-40 Health License Exam: practice exams, a timed real exam, study games and all 11 chapter guides.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dobbyisatyourservice.github.io/fl-240-study/">
+<meta property="og:title" content="Wolf Prep: Florida 2-40 Health Exam">
+<meta property="og:description" content="Practice exams, a timed real exam, study games and all 11 chapter guides. Powered by the Wolf.">
+<meta property="og:image" content="https://dobbyisatyourservice.github.io/fl-240-study/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Wolf Prep: Florida 2-40 Health Exam">
+<meta name="twitter:description" content="Practice exams, a timed real exam, study games and all 11 chapter guides.">
+<meta name="twitter:image" content="https://dobbyisatyourservice.github.io/fl-240-study/og.png">
+<link rel="icon" href="icon.png"><link rel="apple-touch-icon" href="icon.png">
 <style>
 :root{color-scheme:dark;--bg:#07090e;--card:#11151d;--card2:#161b26;--text:#eef1f6;--muted:#8d97a8;--line:#222a37;--accent:#38bdf8;--accent2:#a78bfa;--accent-soft:rgba(56,189,248,.12);--good:#4ade80;--good-soft:rgba(74,222,128,.12);--bad:#fb7185;--bad-soft:rgba(251,113,133,.13);--warn:#fbbf24;--warn-soft:rgba(251,191,36,.12);--grad:linear-gradient(135deg,#38bdf8,#a78bfa)}
 *{box-sizing:border-box}
@@ -162,6 +174,20 @@ body.splash-on main{padding-top:0}
 .nameform .go{margin-top:10px}
 .plist{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:12px}
 .chip{font:inherit;font-size:13px;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--muted)}
+
+/* howling wolf: 6s loop */
+.hero-art .whead{transform-box:view-box;transform-origin:100px 200px;animation:howl 6s ease-in-out infinite}
+.hero-art .mouth{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);animation:mouth 6s ease-in-out infinite}
+.hero-art .waves path{opacity:0;transform-box:fill-box;transform-origin:50% 100%;animation:wave 6s ease-out infinite}
+.hero-art .waves .w2{animation-delay:.25s}.hero-art .waves .w3{animation-delay:.5s}
+.hero-art .hglow{transform-box:fill-box;transform-origin:50% 50%;animation:glow 6s ease-in-out infinite}
+.hero-art .stars circle{animation:tw 3s ease-in-out infinite}.hero-art .stars circle:nth-child(2n){animation-delay:1.3s}.hero-art .stars circle:nth-child(3n){animation-delay:2.1s}
+@keyframes howl{0%,30%{transform:none}42%,74%{transform:translateY(-14px) rotate(-3deg) scaleY(.9)}50%{transform:translateY(-15px) rotate(3deg) scaleY(.9)}58%{transform:translateY(-15px) rotate(-2deg) scaleY(.9)}66%{transform:translateY(-15px) rotate(2deg) scaleY(.9)}86%,100%{transform:none}}
+@keyframes mouth{0%,36%{transform:scaleY(0)}46%,72%{transform:scaleY(1)}82%,100%{transform:scaleY(0)}}
+@keyframes wave{0%,44%{opacity:0;transform:translateY(10px) scale(.7)}52%{opacity:.95}80%{opacity:0;transform:translateY(-22px) scale(1.35)}100%{opacity:0}}
+@keyframes glow{0%,35%{transform:scale(1);opacity:.8}55%,70%{transform:scale(1.12);opacity:1}100%{transform:scale(1);opacity:.8}}
+@keyframes tw{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.hero-art *{animation:none!important}}
 </style>
 </head>
 <body>
@@ -287,14 +313,14 @@ function runCd(){
   cd();tick=setInterval(cd,1000);
 }
 function profileBox(){
-  if(ACTIVE)return `<div class="welcome">Welcome back, <b>${esc(ACTIVE)}</b> 👋</div><button class="btn pri go" onclick="setView('dash')">Continue studying →</button>
+  if(ACTIVE)return `<div class="welcome">Welcome back, <b>${esc(ACTIVE.split(' ')[0])}</b> 👋</div><button class="btn pri go" onclick="setView('dash')">Continue studying →</button>
    <div class="plist">${PROFILES.filter(n=>n!==ACTIVE).map(n=>`<button class="chip" onclick="useProfile(this.dataset.n)" data-n="${esc(n)}">Switch to ${esc(n)}</button>`).join('')}<button class="chip" onclick="newProf()">+ New profile</button></div>`;
   return `<form class="nameform" onsubmit="createProfile(this.n.value);return false"><label for="pn">What's your name?</label><input id="pn" name="n" maxlength="24" placeholder="Your name" autocomplete="given-name" required><button class="btn pri go" type="submit">Get started →</button></form>
    ${PROFILES.length?`<div class="plist">${PROFILES.map(n=>`<button class="chip" onclick="useProfile(this.dataset.n)" data-n="${esc(n)}">I'm ${esc(n)}</button>`).join('')}</div>`:''}
    <p class="stats" style="margin-top:10px">Your progress saves on this device under your name. No password, no account.</p>`}
 function newProf(){ACTIVE=null;renderHome();setTimeout(()=>{const i=$('#pn');i&&i.focus()},50)}
 function renderHome(){
-  app.innerHTML=`<div class="splash"><div class="hero-wrap"><svg class="hero-art" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wolf illustration"><defs><radialGradient id="hglow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#38bdf8" stop-opacity=".5"/><stop offset=".6" stop-color="#a78bfa" stop-opacity=".18"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient><radialGradient id="hmoon" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0b1020"/></radialGradient></defs><circle cx="200" cy="135" r="160" fill="url(#hglow)"/><circle cx="200" cy="130" r="112" fill="url(#hmoon)" stroke="#38bdf8" stroke-opacity=".35" stroke-width="1.5"/><g fill="#fff" opacity=".85"><circle cx="40" cy="40" r="1.5"/><circle cx="85" cy="90" r="1"/><circle cx="355" cy="45" r="1.7"/><circle cx="372" cy="140" r="1"/><circle cx="52" cy="150" r="1.2"/><circle cx="125" cy="22" r="1.1"/><circle cx="300" cy="18" r="1"/><circle cx="20" cy="230" r="1"/></g><path fill="#0e1424" d="M0 246 L55 214 L92 228 L140 200 L200 232 L262 202 L318 230 L400 206 L400 300 L0 300Z"/><path fill="#07090e" d="M0 300 L0 266 C70 254 130 262 200 250 C270 260 330 254 400 266 L400 300Z"/><g transform="translate(118,28) scale(.82)"><polygon points="30,10 28,80 55,70" fill="#38bdf8"/><polygon points="30,10 55,70 70,60" fill="#0369a1"/><polygon points="70,60 100,50 100,95" fill="#7dd3fc"/><polygon points="55,70 70,60 100,95 62,100" fill="#0ea5e9"/><polygon points="28,80 55,70 62,100 20,120" fill="#7dd3fc"/><polygon points="20,120 62,100 80,150 40,150" fill="#38bdf8"/><polygon points="62,100 100,95 100,130 80,150" fill="#0ea5e9"/><polygon points="80,150 100,130 100,160" fill="#7dd3fc"/><polygon points="40,150 80,150 70,175" fill="#0369a1"/><polygon points="70,175 80,150 100,160 100,205" fill="#38bdf8"/><polygon points="20,120 40,150 30,140" fill="#0369a1"/><polygon points="170,10 172,80 145,70" fill="#a78bfa"/><polygon points="170,10 145,70 130,60" fill="#5b21b6"/><polygon points="130,60 100,50 100,95" fill="#c4b5fd"/><polygon points="145,70 130,60 100,95 138,100" fill="#8b5cf6"/><polygon points="172,80 145,70 138,100 180,120" fill="#c4b5fd"/><polygon points="180,120 138,100 120,150 160,150" fill="#a78bfa"/><polygon points="138,100 100,95 100,130 120,150" fill="#8b5cf6"/><polygon points="120,150 100,130 100,160" fill="#c4b5fd"/><polygon points="160,150 120,150 130,175" fill="#5b21b6"/><polygon points="130,175 120,150 100,160 100,205" fill="#a78bfa"/><polygon points="180,120 160,150 170,140" fill="#5b21b6"/><polygon points="58,98 86,108 66,114" fill="#07090e"/><polygon points="142,98 114,108 134,114" fill="#07090e"/><circle cx="68" cy="106" r="2.2" fill="#e0f2fe"/><circle cx="132" cy="106" r="2.2" fill="#e0f2fe"/><polygon points="86,158 114,158 100,174" fill="#07090e"/><polygon points="100,95 100,160" stroke="#07090e" stroke-opacity=".15"/></g></svg></div>
+  app.innerHTML=`<div class="splash"><div class="hero-wrap"><svg class="hero-art" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wolf illustration"><defs><radialGradient id="hglow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#38bdf8" stop-opacity=".5"/><stop offset=".6" stop-color="#a78bfa" stop-opacity=".18"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient><radialGradient id="hmoon" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0b1020"/></radialGradient></defs><circle class="hglow" cx="200" cy="135" r="160" fill="url(#hglow)"/><circle cx="200" cy="130" r="112" fill="url(#hmoon)" stroke="#38bdf8" stroke-opacity=".35" stroke-width="1.5"/><g class="stars" fill="#fff" opacity=".85"><circle cx="40" cy="40" r="1.5"/><circle cx="85" cy="90" r="1"/><circle cx="355" cy="45" r="1.7"/><circle cx="372" cy="140" r="1"/><circle cx="52" cy="150" r="1.2"/><circle cx="125" cy="22" r="1.1"/><circle cx="300" cy="18" r="1"/><circle cx="20" cy="230" r="1"/></g><path fill="#0e1424" d="M0 246 L55 214 L92 228 L140 200 L200 232 L262 202 L318 230 L400 206 L400 300 L0 300Z"/><path fill="#07090e" d="M0 300 L0 266 C70 254 130 262 200 250 C270 260 330 254 400 266 L400 300Z"/><g class="waves" fill="none" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round"><path class="w1" d="M178 40 Q200 26 222 40"/><path class="w2" d="M170 30 Q200 10 230 30"/><path class="w3" d="M162 20 Q200 -6 238 20"/></g><g transform="translate(118,28) scale(.82)"><g class="whead"><polygon points="30,10 28,80 55,70" fill="#38bdf8"/><polygon points="30,10 55,70 70,60" fill="#0369a1"/><polygon points="70,60 100,50 100,95" fill="#7dd3fc"/><polygon points="55,70 70,60 100,95 62,100" fill="#0ea5e9"/><polygon points="28,80 55,70 62,100 20,120" fill="#7dd3fc"/><polygon points="20,120 62,100 80,150 40,150" fill="#38bdf8"/><polygon points="62,100 100,95 100,130 80,150" fill="#0ea5e9"/><polygon points="80,150 100,130 100,160" fill="#7dd3fc"/><polygon points="40,150 80,150 70,175" fill="#0369a1"/><polygon points="70,175 80,150 100,160 100,205" fill="#38bdf8"/><polygon points="20,120 40,150 30,140" fill="#0369a1"/><polygon points="170,10 172,80 145,70" fill="#a78bfa"/><polygon points="170,10 145,70 130,60" fill="#5b21b6"/><polygon points="130,60 100,50 100,95" fill="#c4b5fd"/><polygon points="145,70 130,60 100,95 138,100" fill="#8b5cf6"/><polygon points="172,80 145,70 138,100 180,120" fill="#c4b5fd"/><polygon points="180,120 138,100 120,150 160,150" fill="#a78bfa"/><polygon points="138,100 100,95 100,130 120,150" fill="#8b5cf6"/><polygon points="120,150 100,130 100,160" fill="#c4b5fd"/><polygon points="160,150 120,150 130,175" fill="#5b21b6"/><polygon points="130,175 120,150 100,160 100,205" fill="#a78bfa"/><polygon points="180,120 160,150 170,140" fill="#5b21b6"/><polygon points="58,98 86,108 66,114" fill="#07090e"/><polygon points="142,98 114,108 134,114" fill="#07090e"/><circle cx="68" cy="106" r="2.2" fill="#e0f2fe"/><circle cx="132" cy="106" r="2.2" fill="#e0f2fe"/><polygon class="mouth" points="84,168 116,168 100,206" fill="#1a0b2e"/><polygon points="86,158 114,158 100,174" fill="#07090e"/><polygon points="100,95 100,160" stroke="#07090e" stroke-opacity=".15"/></g></g></svg></div>
   <div class="hero"><div class="eyebrow">Powered by the Wolf</div>
   <h2>Get ready for your <span>Florida 2-40 Health</span> License Exam</h2>
   <p>238 practice questions, 340 key terms, timed mock exams and all 11 chapter guides. Built for studying on the go.</p>
