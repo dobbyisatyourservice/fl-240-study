@@ -223,6 +223,15 @@ body.splash-on main{padding-top:0}
 .feat span{font-size:12px}
 .bubble{font-size:13px;padding:8px 11px}
 @media (max-width:360px){.hero h2{font-size:23px}.bubble{font-size:12px}}
+
+.tsearch{position:sticky;top:calc(var(--hh,140px));z-index:3;padding:6px 0 10px;background:var(--bg)}
+.tsearch input{width:100%;font:inherit;font-size:16px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--card2);color:var(--text);outline:none}
+.tsearch input:focus{border-color:var(--accent)}
+.tch{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin:16px 0 6px}
+.tcard{padding:4px 14px}
+.trow{padding:11px 0;border-bottom:1px solid var(--line);font-size:15px;line-height:1.45}.trow:last-child{border-bottom:0}
+.trow>b{display:block;font-size:15.5px;margin-bottom:2px}.trow div{color:#c9d1dd}
+mark{background:rgba(56,189,248,.3);color:inherit;border-radius:3px;padding:0 1px}
 </style>
 </head>
 <body>
@@ -268,7 +277,7 @@ let examSize=store.get('examSize',50);
 let mist=store.get('mist',null), mcleared=store.get('mcleared',0), mbest=store.get('mbest',0);
 let mround=null, mstreak=0;
 const MASTER=2;
-const SECS={games:{views:[['mist','🔁 Mistakes'],['speed','⚡ Speed'],['match','🧩 Match'],['cards','🃏 Cards']]},exams:{views:[['quiz','🎯 Practice exam'],['exam','⏱️ Real exam']]},guides:{views:[['guides','']]},stats:{views:[['stats','']]}};
+const SECS={games:{views:[['mist','🔁 Mistakes'],['speed','⚡ Speed'],['match','🧩 Match'],['cards','🃏 Cards']]},exams:{views:[['quiz','🎯 Practice exam'],['exam','⏱️ Real exam']]},guides:{views:[['guides','📖 Chapter guides'],['terms','🔤 All terms']]},stats:{views:[['stats','']]}};
 function secOf(v){for(const k in SECS)if(SECS[k].views.some(x=>x[0]===v))return k;return null}
 function navUI(){const sec=secOf(view);if(sec)SECS[sec].last=view;
   document.querySelectorAll('#sec button').forEach(b=>b.classList.toggle('on',b.dataset.s===sec));
@@ -309,7 +318,7 @@ function toggle(k,label){return `<label><input type="checkbox" ${opts[k]?'checke
 function render(){
   document.body.classList.toggle('splash-on',view==='home');
   $('#toTop').style.display=view==='guides'&&guideOpen?'block':'none';
-  ({home:renderHome,dash:renderDash,speed:renderSpeed,match:renderMatch,quiz:renderQuiz,cards:renderCards,guides:renderGuides,exam:renderExam,stats:renderStats,mist:renderMist})[view]();
+  ({home:renderHome,terms:renderTerms,dash:renderDash,speed:renderSpeed,match:renderMatch,quiz:renderQuiz,cards:renderCards,guides:renderGuides,exam:renderExam,stats:renderStats,mist:renderMist})[view]();
 }
 function chStats(n){const pool=D.questions.filter(q=>n==='all'||q.ch==n);let done=0,right=0;pool.forEach(q=>{const r=results[qid(q)];if(r!==undefined){done++;right+=r}});return {total:pool.length,done,right,missed:done-right}}
 function barClass(p){return p>=80?'g':p>=PASS?'':p>=50?'w':'b'}
@@ -333,7 +342,7 @@ function renderDash(){
    <button class="tile" onclick="setView('cards')"><span class="ic">🃏</span><span><b>Flashcards</b><small>${tk}/${D.terms.length} known</small></span></button>
   </div>
   <div class="tiles" style="margin-top:10px">
-   <button class="tile" onclick="setView('guides')" style="min-height:0"><span><b style="margin:0">📖 Guides</b><small>11 chapters</small></span></button>
+   <button class="tile" onclick="setView('guides')" style="min-height:0"><span><b style="margin:0">📖 Guides</b><small>11 chapters + all terms</small></span></button>
    <button class="tile" onclick="setView('stats')" style="min-height:0"><span><b style="margin:0">📊 Stats</b><small>Weakest chapters</small></span></button>
   </div>
   <div class="foot">WOLF PREP · STUDY HARD, HUNT SMART 🐺</div>`;
@@ -591,6 +600,23 @@ function renderStats(){
   app.innerHTML=h;
 }
 function goCh(n,v){ch=String(n);store.set('ch',ch);$('#ch').value=ch;setView(v)}
+
+/* ---------- Terms reference ---------- */
+let termSearch='';
+function renderTerms(){
+  app.innerHTML=`<div class="tsearch"><input id="tq" type="search" placeholder="Search ${D.terms.filter(inCh).length} terms…" value="${esc(termSearch)}" autocomplete="off"></div><div id="tlist"></div>`;
+  const inp=$('#tq');inp.oninput=()=>{termSearch=inp.value;drawTerms()};drawTerms();
+}
+function drawTerms(){const q=termSearch.trim().toLowerCase();
+  const list=D.terms.filter(t=>inCh(t)&&(!q||t.t.toLowerCase().includes(q)||t.d.toLowerCase().includes(q)));
+  const hl=x=>{let h=inl(x);if(q){const r=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');h=h.replace(/(<[^>]+>)|([^<]+)/g,(m,tag,txt)=>tag||txt.replace(r,'<mark>$1</mark>'))}return h};
+  let h=`<div class="stats">${list.length} term${list.length===1?'':'s'}${q?` matching "${esc(termSearch)}"`:''}</div>`;
+  let cur=null;
+  list.forEach(t=>{if(t.ch!==cur){if(cur!==null)h+='</div>';cur=t.ch;h+=`<div class="tch">Ch ${t.ch}: ${esc(D.titles[t.ch])}</div><div class="card tcard">`}
+    h+=`<div class="trow"><b>${hl(t.t)}</b><div>${hl(t.d)}</div></div>`});
+  if(cur!==null)h+='</div>';
+  if(!list.length)h+='<p class="empty">No terms match. Try a shorter word.</p>';
+  $('#tlist').innerHTML=h}
 
 /* ---------- Guides ---------- */
 function renderGuides(){
