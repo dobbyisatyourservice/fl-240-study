@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d4ed8">
+<title>FL 2-40 Health Study</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#16181d;--muted:#5d6470;--line:#e2e5ea;--accent:#1d4ed8;--accent-soft:#e8eefc;--good:#15803d;--good-soft:#e5f6ea;--bad:#b91c1c;--bad-soft:#fde8e8}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--card:#181b21;--text:#eceef2;--muted:#9aa1ad;--line:#2a2f38;--accent:#7aa2ff;--accent-soft:#1d2740;--good:#4ade80;--good-soft:#123222;--bad:#f87171;--bad-soft:#3a1717}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 0 0}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.top{display:flex;align-items:center;gap:8px;padding:10px 0 6px}
+.top h1{font-size:17px;margin:0;flex:1}
+select{font:inherit;font-size:15px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);max-width:55vw}
+nav{display:flex;gap:4px;padding-bottom:8px}
+nav button{flex:1;font:inherit;font-weight:600;font-size:15px;padding:9px 4px;border:0;border-radius:10px;background:transparent;color:var(--muted)}
+nav button.on{background:var(--accent-soft);color:var(--accent)}
+main{padding:14px 0 90px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.meta{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.q{font-size:17px;font-weight:600;margin:0 0 12px}
+.opt{display:block;width:100%;text-align:left;font:inherit;padding:12px 14px;margin:8px 0;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--text)}
+.opt b{color:var(--muted);margin-right:6px}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.why{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);font-size:15px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:600;padding:11px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){.btn.pri{color:#0f1115}}
+.btn.grow{flex:1}
+.toggles{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-bottom:12px}
+.toggles label{display:flex;align-items:center;gap:6px}
+.toggles input{width:18px;height:18px}
+.stats{font-size:14px;color:var(--muted);margin-bottom:10px}
+.flash{min-height:230px;display:flex;flex-direction:column;justify-content:center;text-align:center;cursor:pointer;user-select:none}
+.flash .term{font-size:21px;font-weight:700}
+.flash .def{font-size:17px;margin-top:12px}
+.flash .hint{font-size:13px;color:var(--muted);margin-top:14px}
+.glist a{display:block;padding:14px 16px;text-decoration:none;color:var(--text);border-bottom:1px solid var(--line)}
+.glist a:last-child{border-bottom:0}
+.glist{padding:0;overflow:hidden}
+.guide{overflow-wrap:break-word}
+.guide h1{font-size:22px;line-height:1.25}.guide h2{font-size:19px;margin-top:28px}.guide h3{font-size:17px}
+.guide table{border-collapse:collapse;font-size:14px;min-width:100%}
+.guide th,.guide td{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:left}
+.guide th{background:var(--accent-soft)}
+.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:10px 0}
+.guide blockquote{margin:10px 0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+.guide code{font-size:14px}
+.back{margin-bottom:10px}
+.empty{color:var(--muted);text-align:center;padding:30px 0}
+#toTop{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));display:none}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="top"><h1>FL 2-40 Health</h1><select id="ch"></select></div>
+  <nav><button data-v="quiz" class="on">Quiz</button><button data-v="cards">Flashcards</button><button data-v="guides">Guides</button></nav>
+</div></header>
+<main class="wrap" id="app"><p class="empty">Loading…</p></main>
+<button class="btn" id="toTop" onclick="scrollTo(0,0)">↑ Top</button>
+<script src="marked.min.js"></script>
+<script>
+const $=s=>document.querySelector(s), app=$('#app');
+const store={get(k,d){try{return JSON.parse(localStorage.getItem('fl240:'+k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem('fl240:'+k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const inl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+let D, view=store.get('view','quiz'), ch=store.get('ch','all');
+let results=store.get('results',{}), known=store.get('known',{});
+let opts=store.get('opts',{shuffle:false,missed:false,unknown:false,fshuffle:true});
+let deck=[], idx=0, flipped=false, answered=null, guideOpen=null;
+
+fetch('data.json').then(r=>r.json()).then(d=>{D=d;D.questions=D.questions.filter(q=>q.q);
+  const s=$('#ch');s.innerHTML='<option value="all">All chapters</option>'+Object.entries(D.titles).map(([n,t])=>`<option value="${n}">Ch ${n}: ${esc(t)}</option>`).join('');
+  s.value=ch;s.onchange=()=>{ch=s.value;store.set('ch',ch);guideOpen=null;reset()};
+  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{view=b.dataset.v;store.set('view',view);guideOpen=null;reset()});
+  reset();
+}).catch(()=>app.innerHTML='<p class="empty">Could not load data. Check your connection and reload.</p>');
+
+const qid=q=>q.ch+'-'+q.n, tid=t=>t.ch+'-'+t.t;
+function reset(){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+  idx=0;flipped=false;answered=null;
+  if(view==='quiz'){let q=D.questions.filter(q=>ch==='all'||q.ch==ch);if(opts.missed)q=q.filter(x=>results[qid(x)]===0);deck=opts.shuffle?shuffle(q):q}
+  if(view==='cards'){let t=D.terms.filter(t=>ch==='all'||t.ch==ch);if(opts.unknown)t=t.filter(x=>!known[tid(x)]);deck=opts.fshuffle?shuffle(t):t}
+  render();scrollTo(0,0);
+}
+function toggle(k,label){return `<label><input type="checkbox" ${opts[k]?'checked':''} onchange="opts.${k}=this.checked;store.set('opts',opts);reset()">${label}</label>`}
+function render(){
+  $('#toTop').style.display=view==='guides'&&guideOpen?'block':'none';
+  if(view==='quiz')return renderQuiz();
+  if(view==='cards')return renderCards();
+  renderGuides();
+}
+function quizStats(){const pool=D.questions.filter(q=>ch==='all'||q.ch==ch);let done=0,right=0;pool.forEach(q=>{const r=results[qid(q)];if(r!==undefined){done++;right+=r}});return `${done}/${pool.length} answered · ${done?Math.round(100*right/done):0}% right`}
+function renderQuiz(){
+  let h=`<div class="toggles">${toggle('shuffle','Shuffle')}${toggle('missed','Missed only')}</div><div class="stats">${quizStats()}</div>`;
+  if(!deck.length){app.innerHTML=h+`<p class="empty">${opts.missed?'No missed questions here. Nice!':'No questions.'}</p>`;return}
+  if(idx>=deck.length){app.innerHTML=h+`<div class="card"><p class="q">End of this set.</p><div class="row"><button class="btn pri grow" onclick="reset()">Start again</button></div></div>`;return}
+  const q=deck[idx];
+  h+=`<div class="card"><div class="meta"><span>Ch ${q.ch} · Q${q.n}</span><span>${idx+1} of ${deck.length}</span></div><p class="q">${inl(q.q)}</p>`;
+  q.o.forEach((o,i)=>{const L='ABCD'[i];let c='';if(answered){if(L===q.a)c='right';else if(L===answered)c='wrong'}
+    h+=`<button class="opt ${c}" ${answered?'disabled':''} onclick="pick('${L}')"><b>${L}</b>${inl(o)}</button>`});
+  if(answered)h+=`<div class="why"><b>${answered===q.a?'Correct.':'Answer: '+esc(q.af)+'.'}</b> ${inl(q.w)}</div>`;
+  h+=`</div><div class="row"><button class="btn" onclick="go(-1)" ${idx?'':'disabled'}>Back</button><button class="btn pri grow" onclick="go(1)">${answered?'Next':'Skip'}</button></div>`;
+  app.innerHTML=h;
+}
+function pick(L){const q=deck[idx];answered=L;results[qid(q)]=L===q.a?1:0;store.set('results',results);renderQuiz()}
+function go(d){idx=Math.max(0,idx+d);answered=null;flipped=false;render();scrollTo(0,0)}
+function renderCards(){
+  const pool=D.terms.filter(t=>ch==='all'||t.ch==ch),k=pool.filter(t=>known[tid(t)]).length;
+  let h=`<div class="toggles">${toggle('fshuffle','Shuffle')}${toggle('unknown','Hide ones I know')}</div><div class="stats">${k}/${pool.length} marked known</div>`;
+  if(!deck.length){app.innerHTML=h+`<p class="empty">You know every card here. <button class="btn" onclick="clearKnown()">Reset</button></p>`;return}
+  if(idx>=deck.length){app.innerHTML=h+`<div class="card"><p class="q">End of the deck.</p><button class="btn pri" onclick="reset()">Go again</button></div>`;return}
+  const t=deck[idx];
+  h+=`<div class="card flash" onclick="flipped=!flipped;renderCards()"><div class="meta"><span>Ch ${t.ch}</span><span>${idx+1} of ${deck.length}</span></div><div class="term">${inl(t.t)}</div>${flipped?`<div class="def">${inl(t.d)}</div>`:'<div class="hint">Tap to show the meaning</div>'}</div>
+  <div class="row"><button class="btn" onclick="go(-1)" ${idx?'':'disabled'}>Back</button><button class="btn grow" onclick="mark(0)">Again</button><button class="btn pri grow" onclick="mark(1)">Got it</button></div>
+  <p class="stats" style="margin-top:14px"><a href="#" onclick="clearKnown();return false" style="color:var(--muted)">Reset known cards</a></p>`;
+  app.innerHTML=h;
+}
+function mark(v){const t=deck[idx];if(v)known[tid(t)]=1;else delete known[tid(t)];store.set('known',known);go(1)}
+function clearKnown(){known={};store.set('known',known);reset()}
+function renderGuides(){
+  if(guideOpen){app.innerHTML=`<button class="btn back" onclick="guideOpen=null;render();scrollTo(0,0)">← All guides</button><div class="card guide"><p class="empty">Loading guide…</p></div>`;
+    fetch(D.guides[guideOpen]).then(r=>r.text()).then(md=>{const el=app.querySelector('.guide');el.innerHTML=marked.parse(md);
+      el.querySelectorAll('table').forEach(t=>{const w=document.createElement('div');w.className='tbl';t.parentNode.insertBefore(w,t);w.appendChild(t)})});
+    return}
+  const list=Object.keys(D.guides).map(Number).sort((a,b)=>a-b).filter(n=>ch==='all'||n==ch);
+  app.innerHTML=`<div class="card glist">${list.map(n=>`<a href="#" onclick="guideOpen=${n};render();scrollTo(0,0);return false"><b>Chapter ${n}</b><br><span style="color:var(--muted)">${esc(D.titles[n])}</span></a>`).join('')}</div><p class="stats">Practice question progress: ${quizStats()}. <a href="#" style="color:var(--muted)" onclick="if(confirmReset())reset();return false">Reset quiz progress</a></p>`;
+}
+function confirmReset(){results={};store.set('results',results);return true}
+</script>
+</body>
+</html>
