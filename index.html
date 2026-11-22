@@ -17,7 +17,7 @@ header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px so
 .top h1{font-size:17px;margin:0;flex:1;white-space:nowrap}
 select{font:inherit;font-size:15px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);max-width:58vw}
 nav{display:flex;gap:2px;padding-bottom:8px}
-nav button{flex:1;font:inherit;font-weight:600;font-size:14px;padding:9px 2px;border:0;border-radius:10px;background:transparent;color:var(--muted)}
+nav button{flex:1 1 auto;font:inherit;font-weight:600;font-size:13px;padding:9px 3px;border:0;border-radius:10px;background:transparent;color:var(--muted)}
 nav button.on{background:var(--accent-soft);color:var(--accent)}
 main{padding:14px 0 90px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
@@ -80,12 +80,17 @@ main{padding:14px 0 90px}
 .tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px}
 .tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warn-soft);color:var(--warn)}
 ul.tight{margin:6px 0;padding-left:20px}
+.badge{display:inline-block;min-width:18px;margin-left:3px;padding:0 5px;border-radius:99px;background:var(--bad);color:#fff;font-size:11px;line-height:18px;vertical-align:1px}
+.badge:empty{display:none}
+.dots{letter-spacing:2px;color:var(--good)}
+.streak{font-weight:700;color:var(--warn)}
+.pop{animation:pop .35s ease}@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
 </style>
 </head>
 <body>
 <header><div class="wrap">
   <div class="top"><h1>FL 2-40 Health</h1><select id="ch"></select></div>
-  <nav><button data-v="quiz">Practice</button><button data-v="exam">Exam</button><button data-v="cards">Cards</button><button data-v="stats">Progress</button><button data-v="guides">Guides</button></nav>
+  <nav><button data-v="quiz">Quiz</button><button data-v="exam">Exam</button><button data-v="mist">Mistakes<span id="mbadge" class="badge"></span></button><button data-v="cards">Cards</button><button data-v="stats">Stats</button><button data-v="guides">Guides</button></nav>
 </div></header>
 <main class="wrap" id="app"><p class="empty">Loading…</p></main>
 <button class="btn" id="toTop" onclick="scrollTo(0,0)">↑ Top</button>
@@ -98,13 +103,22 @@ const inl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const pct=(a,b)=>b?Math.round(100*a/b):0;
 const PASS=70;
-let D, QBY={}, view=store.get('view','quiz'), ch=store.get('ch','all');
+let D, QBY={}, TBY={}, view=store.get('view','quiz'), ch=store.get('ch','all');
 let results=store.get('results',{}), known=store.get('known',{}), exams=store.get('exams',[]), exam=store.get('exam',null);
 let opts=store.get('opts',{shuffle:true,missed:false,unknown:false,fshuffle:true});
 let examSize=store.get('examSize',50);
+/* Mistakes deck: key -> correct-in-a-row streak. 'q:ch-n' = question, 't:ch-term' = flashcard term. Cleared after 2 right in a row. */
+let mist=store.get('mist',null), mcleared=store.get('mcleared',0), mbest=store.get('mbest',0);
+let mround=null, mstreak=0;
+const MASTER=2;
+function missed(key){mist[key]=0;store.set('mist',mist);badge()}
+function gotRight(key){if(!(key in mist))return false;mist[key]++;let cleared=false;if(mist[key]>=MASTER){delete mist[key];mcleared++;store.set('mcleared',mcleared);cleared=true}store.set('mist',mist);badge();return cleared}
+function mistKeys(){return Object.keys(mist).filter(k=>{const it=mItem(k);return it&&(ch==='all'||it.ch==ch)})}
+function badge(){const n=Object.keys(mist||{}).length;const b=$('#mbadge');if(b)b.textContent=n?n:''}
 let deck=[], idx=0, flipped=false, answered=null, guideOpen=null, tick=null, sessR=0, sessN=0;
 
-fetch('data.json').then(r=>r.json()).then(d=>{D=d;D.questions=D.questions.filter(q=>q.q);D.questions.forEach(q=>QBY[qid(q)]=q);
+fetch('data.json').then(r=>r.json()).then(d=>{D=d;D.questions=D.questions.filter(q=>q.q);D.questions.forEach(q=>QBY[qid(q)]=q);D.terms.forEach(t=>TBY[tid(t)]=t);
+  if(!mist){mist={};Object.entries(results).forEach(([k,v])=>{if(v===0)mist['q:'+k]=0});store.set('mist',mist)}badge();
   const s=$('#ch');s.innerHTML='<option value="all">All chapters</option>'+Object.entries(D.titles).map(([n,t])=>`<option value="${n}">Ch ${n}: ${esc(t)}</option>`).join('');
   s.value=ch;s.onchange=()=>{ch=s.value;store.set('ch',ch);guideOpen=null;reset()};
   document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
@@ -124,7 +138,7 @@ function reset(){
 function toggle(k,label){return `<label><input type="checkbox" ${opts[k]?'checked':''} onchange="opts.${k}=this.checked;store.set('opts',opts);reset()">${label}</label>`}
 function render(){
   $('#toTop').style.display=view==='guides'&&guideOpen?'block':'none';
-  ({quiz:renderQuiz,cards:renderCards,guides:renderGuides,exam:renderExam,stats:renderStats})[view]();
+  ({quiz:renderQuiz,cards:renderCards,guides:renderGuides,exam:renderExam,stats:renderStats,mist:renderMist})[view]();
 }
 function chStats(n){const pool=D.questions.filter(q=>n==='all'||q.ch==n);let done=0,right=0;pool.forEach(q=>{const r=results[qid(q)];if(r!==undefined){done++;right+=r}});return {total:pool.length,done,right,missed:done-right}}
 function barClass(p){return p>=80?'g':p>=PASS?'':p>=50?'w':'b'}
@@ -144,7 +158,7 @@ function renderQuiz(){
   h+=`</div><div class="row"><button class="btn" onclick="go(-1)" ${idx?'':'disabled'}>Back</button><button class="btn pri grow" onclick="go(1)">${answered?'Next':'Skip'}</button></div>`;
   app.innerHTML=h;
 }
-function pick(L){const q=deck[idx];answered=L;const ok=L===q.a?1:0;results[qid(q)]=ok;store.set('results',results);sessN++;sessR+=ok;renderQuiz()}
+function pick(L){const q=deck[idx];answered=L;const ok=L===q.a?1:0;results[qid(q)]=ok;store.set('results',results);sessN++;sessR+=ok;if(ok)gotRight('q:'+qid(q));else missed('q:'+qid(q));renderQuiz()}
 function go(d){idx=Math.max(0,idx+d);answered=null;flipped=false;render();scrollTo(0,0)}
 
 /* ---------- Mock exam ---------- */
@@ -189,7 +203,7 @@ function confirmSubmit(){const un=exam.qs.length-Object.keys(exam.ans).length,fl
   if(confirm(`Submit for grading?${un?`\n${un} unanswered (counted wrong).`:''}${fl?`\n${fl} flagged.`:''}`))submitExam()}
 function submitExam(){
   clearInterval(tick);let right=0;const byCh={};
-  exam.qs.forEach(id=>{const q=QBY[id],ok=exam.ans[id]===q.a?1:0;right+=ok;(byCh[q.ch]=byCh[q.ch]||[0,0]);byCh[q.ch][0]+=ok;byCh[q.ch][1]++;if(exam.ans[id])results[id]=ok});
+  exam.qs.forEach(id=>{const q=QBY[id],ok=exam.ans[id]===q.a?1:0;right+=ok;(byCh[q.ch]=byCh[q.ch]||[0,0]);byCh[q.ch][0]+=ok;byCh[q.ch][1]++;if(exam.ans[id])results[id]=ok;if(ok)gotRight('q:'+id);else missed('q:'+id)});
   store.set('results',results);
   exam.done=true;exam.score=pct(right,exam.qs.length);exam.right=right;exam.byCh=byCh;exam.used=Math.min(exam.limit,Math.round((Date.now()-exam.start)/1000));
   exams.push({date:Date.now(),n:exam.qs.length,score:exam.score,right});store.set('exams',exams);store.set('exam',exam);
@@ -201,13 +215,65 @@ function renderResult(e){
   <div><span class="tag ${ok?'g':'b'}" style="font-size:14px">${ok?'PASS':'FAIL'}</span></div>
   <p class="stats" style="margin:10px 0 0">${e.right} of ${e.qs.length} right · pass mark ${PASS}% (${Math.ceil(e.qs.length*PASS/100)} right) · time used ${fmt(e.used)}</p></div>
   <div class="card"><p class="q" style="font-size:15px">By chapter</p>${Object.keys(e.byCh).map(Number).sort((a,b)=>pct(e.byCh[a][0],e.byCh[a][1])-pct(e.byCh[b][0],e.byCh[b][1])).map(n=>{const [r,t]=e.byCh[n],p=pct(r,t);return `<div class="chrow"><div class="t"><span>Ch ${n}: ${esc(D.titles[n])}</span><b>${r}/${t}</b></div><div class="bar"><i class="${barClass(p)}" style="width:${p}%"></i></div></div>`}).join('')}</div>
-  <div class="row" style="margin-bottom:12px"><button class="btn pri grow" onclick="exam=null;store.set('exam',null);renderExam();scrollTo(0,0)">New exam</button>${wrong.length?`<button class="btn grow" onclick="opts.missed=true;store.set('opts',opts);setView('quiz')">Drill missed</button>`:''}</div>`;
+  <div class="row" style="margin-bottom:12px"><button class="btn pri grow" onclick="exam=null;store.set('exam',null);renderExam();scrollTo(0,0)">New exam</button>${wrong.length?`<button class="btn grow" onclick="setView('mist')">Drill mistakes</button>`:''}</div>`;
   if(wrong.length){h+=`<p class="q" style="font-size:15px">Review your ${wrong.length} wrong answer${wrong.length>1?'s':''}</p>`;
     wrong.forEach(id=>{const q=QBY[id],a=e.ans[id];h+=`<div class="card"><div class="meta"><span>Ch ${q.ch} · Q${q.n}</span><span>${a?'You chose '+a:'Unanswered'}</span></div><p class="q" style="font-size:16px">${inl(q.q)}</p>`;
       q.o.forEach((o,i)=>{const L='ABCD'[i];if(L===q.a||L===a)h+=`<div class="opt ${L===q.a?'right':'wrong'}"><b>${L}</b>${inl(o)}</div>`});
       h+=`<div class="why">${inl(q.w)}</div></div>`})}
   app.innerHTML=h;
 }
+
+/* ---------- Mistakes game ---------- */
+function mItem(k){return k[0]==='q'?QBY[k.slice(2)]:TBY[k.slice(2)]}
+function termQ(t){ // flashcard term -> multiple choice: definition shown, pick the term
+  let pool=D.terms.filter(x=>x.ch==t.ch&&x.t!==t.t);if(pool.length<3)pool=D.terms.filter(x=>x.t!==t.t);
+  const o=shuffle([t.t,...shuffle(pool).slice(0,3).map(x=>x.t)]);const a='ABCD'[o.indexOf(t.t)];
+  return {ch:t.ch,q:'Which term matches this meaning? '+t.d,o,a,af:a,w:`**${t.t}**: ${t.d}`,term:1};
+}
+function startMist(n){
+  const keys=shuffle(mistKeys()).slice(0,n||9999);
+  mround={keys,i:0,right:0,ans:null,cleared:0,items:keys.map(k=>k[0]==='q'?QBY[k.slice(2)]:termQ(TBY[k.slice(2)]))};
+  mstreak=0;renderMist();scrollTo(0,0);
+}
+function renderMist(){
+  const keys=mistKeys(), total=Object.keys(mist).length, nq=keys.filter(k=>k[0]==='q').length, nt=keys.length-nq;
+  if(!mround){
+    const prog=pct(mcleared,mcleared+total);
+    app.innerHTML=`<div class="card" style="text-align:center"><div class="stats" style="margin:0">Mistakes deck${ch==='all'?'':' · Chapter '+ch}</div><div class="big ${keys.length?'fail':'pass'}">${keys.length}</div>
+    <div class="stats" style="margin:0">${nq} questions · ${nt} flashcard terms</div>
+    <div class="bar" style="margin-top:12px"><i class="g" style="width:${prog}%"></i></div><div class="stats" style="margin:6px 0 0">${mcleared} cleared so far · best streak <span class="streak">${mbest}</span></div></div>
+    ${keys.length?`<div class="row" style="margin-bottom:12px"><button class="btn pri grow" onclick="startMist(10)">Quick round (${Math.min(10,keys.length)})</button><button class="btn grow" onclick="startMist()">All ${keys.length}</button></div>`:`<p class="empty">${total?'No mistakes in this chapter. Switch to "All chapters" to see the rest.':'Nothing here yet. Every question you miss in Quiz or Exam, and every card you mark "Again", lands here.'}</p>`}
+    <div class="card"><p class="q" style="font-size:15px">How it works</p><ul class="tight stats" style="margin:0">
+    <li>Anything you miss anywhere on the site lands here automatically.</li>
+    <li>Get it right <b>${MASTER} times in a row</b> to clear it. Miss it again and its count resets.</li>
+    <li>Missed flashcards come back as multiple-choice: you see the meaning and pick the term.</li>
+    <li>Answers show right away, so this is for learning. Use Exam to test yourself.</li></ul></div>`;
+    return;
+  }
+  const r=mround;
+  if(r.i>=r.items.length){
+    const left=mistKeys().length;
+    app.innerHTML=`<div class="card" style="text-align:center"><div class="stats" style="margin:0">Round done</div><div class="big ${pct(r.right,r.items.length)>=PASS?'pass':'fail'}">${r.right}/${r.items.length}</div>
+    <p class="stats" style="margin:6px 0 0">${r.cleared} cleared this round · ${left} left in the deck</p></div>
+    <div class="row">${left?`<button class="btn pri grow" onclick="startMist(10)">Another quick round</button>`:''}<button class="btn grow" onclick="mround=null;renderMist()">Back to deck</button></div>`;
+    return;
+  }
+  const k=r.keys[r.i], q=r.items[r.i], st=k in mist?mist[k]:MASTER;
+  let h=`<div class="meta"><span>Round: ${r.i+1} of ${r.items.length}</span><span>Streak <span class="streak">${mstreak}🔥</span></span></div>
+  <div class="card ${r.ans&&r.ans===q.a?'pop':''}"><div class="meta"><span>Ch ${q.ch}${q.term?' · flashcard':' · Q'+q.n}</span><span title="right in a row">${'●'.repeat(Math.min(st,MASTER)).padEnd(MASTER,'○')} to clear</span></div><p class="q">${inl(q.q)}</p>`;
+  q.o.forEach((o,i)=>{const L='ABCD'[i];let c='';if(r.ans){if(L===q.a)c='right';else if(L===r.ans)c='wrong'}
+    h+=`<button class="opt ${c}" ${r.ans?'disabled':''} onclick="mPick('${L}')"><b>${L}</b>${inl(o)}</button>`});
+  if(r.ans)h+=`<div class="why"><b>${r.ans===q.a?(r.justCleared?'Correct, and cleared! 🎉':'Correct. One more time to clear it.'):'Not quite. Answer: '+esc(q.af)+'.'}</b> ${inl(q.w)}</div>`;
+  h+=`</div><div class="row"><button class="btn" onclick="mround=null;renderMist()">Quit</button><button class="btn pri grow" onclick="mNext()" ${r.ans?'':'disabled'}>Next</button></div>`;
+  app.innerHTML=h;
+}
+function mPick(L){const r=mround,k=r.keys[r.i],q=r.items[r.i];r.ans=L;
+  if(L===q.a){r.right++;mstreak++;if(mstreak>mbest){mbest=mstreak;store.set('mbest',mbest)}r.justCleared=gotRight(k);if(r.justCleared)r.cleared++;if(k[0]==='q'){results[k.slice(2)]=1;store.set('results',results)}}
+  else{mstreak=0;r.justCleared=false;missed(k);if(k[0]==='q'){results[k.slice(2)]=0;store.set('results',results)}else{delete known[k.slice(2)];store.set('known',known)}
+    // missed again: bring it back later in this round
+    if(r.items.length-r.i<40){r.keys.push(k);r.items.push(k[0]==='q'?q:termQ(TBY[k.slice(2)]))}}
+  renderMist()}
+function mNext(){mround.i++;mround.ans=null;renderMist();scrollTo(0,0)}
 
 /* ---------- Flashcards ---------- */
 function renderCards(){
@@ -221,7 +287,7 @@ function renderCards(){
   <p class="stats" style="margin-top:14px"><a href="#" onclick="clearKnown();return false" style="color:var(--muted)">Reset known cards</a></p>`;
   app.innerHTML=h;
 }
-function mark(v){const t=deck[idx];if(v)known[tid(t)]=1;else{delete known[tid(t)];deck.splice(Math.min(deck.length,idx+5),0,t)}store.set('known',known);go(1)}
+function mark(v){const t=deck[idx];if(v){known[tid(t)]=1;gotRight('t:'+tid(t))}else{delete known[tid(t)];missed('t:'+tid(t));deck.splice(Math.min(deck.length,idx+5),0,t)}store.set('known',known);go(1)}
 function clearKnown(){known={};store.set('known',known);reset()}
 
 /* ---------- Progress ---------- */
@@ -236,13 +302,13 @@ function renderStats(){
     <div><div class="big" style="font-size:30px">${pct(all.right,all.done)}%</div><div class="stats" style="margin:0">practice accuracy</div></div>
     <div><div class="big" style="font-size:30px">${all.done}/${all.total}</div><div class="stats" style="margin:0">questions done</div></div>
     <div><div class="big" style="font-size:30px">${last?last.score+'%':'–'}</div><div class="stats" style="margin:0">last exam</div></div></div>
-    <p class="stats" style="margin:12px 0 0">${tk}/${D.terms.length} flashcards known · ${all.missed} questions currently missed</p></div>`;
+    <p class="stats" style="margin:12px 0 0">${tk}/${D.terms.length} flashcards known · <a href="#" onclick="setView('mist');return false">${Object.keys(mist).length} in your Mistakes deck</a> · ${mcleared} cleared</p></div>`;
   if(weak.length||untouched.length){h+=`<div class="card"><p class="q" style="font-size:15px">Focus next</p><ul class="tight">${weak.map(r=>`<li><a href="#" onclick="goCh(${r.n},'quiz');return false">Ch ${r.n}: ${esc(D.titles[r.n])}</a> (${r.p}% right)</li>`).join('')}${untouched.map(r=>`<li><a href="#" onclick="goCh(${r.n},'quiz');return false">Ch ${r.n}: ${esc(D.titles[r.n])}</a> (not started)</li>`).join('')}</ul></div>`}
   h+=`<div class="card"><p class="q" style="font-size:15px">By chapter</p>${rows.map(r=>`<div class="chrow"><div class="t"><a href="#" onclick="goCh(${r.n},'quiz');return false" style="color:var(--text)">Ch ${r.n}: ${esc(D.titles[r.n])}</a><b>${r.s.done?r.p+'%':'–'}</b></div>
    <div class="bar"><i class="${r.s.done?barClass(r.p):''}" style="width:${r.s.done?r.p:0}%"></i></div>
    <div class="s">${r.s.done}/${r.s.total} questions · ${r.s.missed} missed · ${r.tkn}/${r.tt} cards known</div></div>`).join('')}</div>`;
   if(exams.length)h+=`<div class="card"><p class="q" style="font-size:15px">Exam history</p>${exams.slice().reverse().map(e=>`<div class="chrow"><div class="t"><span>${new Date(e.date).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})} · ${e.n} Qs</span><span class="tag ${e.score>=PASS?'g':'b'}">${e.score}%</span></div></div>`).join('')}</div>`;
-  h+=`<p class="stats"><a href="#" style="color:var(--muted)" onclick="if(confirm('Erase all quiz, card and exam progress?')){results={};known={};exams=[];exam=null;['results','known','exams','exam'].forEach(k=>store.set(k,k==='exam'?null:k==='exams'?[]:{}));renderStats()}return false">Reset all progress</a></p>`;
+  h+=`<p class="stats"><a href="#" style="color:var(--muted)" onclick="if(confirm('Erase all quiz, card and exam progress?')){results={};known={};exams=[];exam=null;mist={};mcleared=0;mbest=0;['results','known','mist'].forEach(k=>store.set(k,{}));store.set('exams',[]);store.set('exam',null);store.set('mcleared',0);store.set('mbest',0);badge();renderStats()}return false">Reset all progress</a></p>`;
   app.innerHTML=h;
 }
 function goCh(n,v){ch=String(n);store.set('ch',ch);$('#ch').value=ch;setView(v)}
