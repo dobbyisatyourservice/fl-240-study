@@ -112,7 +112,7 @@ ul.tight{margin:6px 0;padding-left:20px}
 .tile.wide small{color:rgba(7,9,14,.7)}.tile.wide b{margin:0}
 .tile .badge{position:absolute;top:12px;right:12px;font-size:12px;line-height:22px;min-width:22px}
 .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:22px;letter-spacing:1px}
-.timer{top:104px}
+.timer{top:calc(var(--hh,140px) + 6px)}
 
 body.splash-on header{display:none}
 body.splash-on main{padding-top:0}
@@ -125,14 +125,43 @@ body.splash-on main{padding-top:0}
 .dash-h{padding:4px 0 2px}.dash-h h3{font-size:24px;margin:2px 0 4px;letter-spacing:-.3px}
 .mini{font-size:14px;color:var(--muted)}
 .eyebrow{display:block}
+
+#sec{gap:4px}#sec button{font-size:13px;padding:9px 4px}
+.sub{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}.sub::-webkit-scrollbar{display:none}
+.sub button{flex:0 0 auto;font:inherit;font-size:12.5px;font-weight:600;padding:7px 10px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--muted)}
+.sub button.on{background:var(--grad);color:#07090e;border-color:transparent}
+.sub .badge{margin-left:2px}
+#flash{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:0}
+#flash.ok{animation:fl .5s ease-out;background:radial-gradient(circle at 50% 60%,rgba(74,222,128,.45),rgba(74,222,128,.15) 60%,transparent)}
+#flash.no{animation:fl .7s ease-out;background:radial-gradient(circle at 50% 60%,rgba(251,113,133,.6),rgba(251,113,133,.25) 60%,rgba(251,113,133,.1))}
+@keyframes fl{0%{opacity:1}100%{opacity:0}}
+.shake,.opt.wrong{animation:shake .4s}@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+.bump,.opt.right{animation:pop .35s ease}
+.modehead{font-size:13px;color:var(--muted);margin-bottom:8px}.modehead b{color:var(--text)}
+.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 4px}
+.ring{position:relative;text-align:center;padding:10px 4px;border-radius:16px;background:var(--card2);border:1px solid var(--line)}
+.ring svg{width:70px;height:70px;display:block;margin:0 auto}
+.ring .arc{transition:stroke-dasharray 1s ease}
+.ring b{position:absolute;top:33px;left:0;right:0;font-size:16px}
+.ring small{font-size:12px;color:var(--muted)}
+.sect{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.sphead{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-variant-numeric:tabular-nums;margin-bottom:6px}.sphead b{font-size:26px}
+.tbar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:12px}.tbar i{display:block;height:100%;background:var(--grad);transition:width .2s linear}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mt{font:inherit;font-size:13.5px;line-height:1.35;min-height:84px;padding:10px;border-radius:14px;border:1.5px solid var(--line);background:var(--card2);color:var(--text);text-align:left;transition:opacity .35s,transform .35s}
+.mt.t{font-weight:700;font-size:15px;text-align:center;border-color:rgba(56,189,248,.35)}
+.mt.sel{border-color:var(--accent);background:var(--accent-soft);transform:scale(1.03)}
+.mt.right{border-color:var(--good);background:var(--good-soft)}.mt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.mt.gone{opacity:0;transform:scale(.85);pointer-events:none}
 </style>
 </head>
 <body>
 <header><div class="wrap">
   <div class="top"><button class="logo" onclick="setView('dash')"><svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="wg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs><polygon fill="url(#wg2)" points="9,5 24,21 40,21 55,5 53,30 45,44 32,59 19,44 11,30"/><polygon fill="#07090e" opacity=".35" points="13,11 22,21 15,25"/><polygon fill="#07090e" opacity=".35" points="51,11 42,21 49,25"/><polygon fill="#ffffff" opacity=".22" points="24,21 40,21 32,33"/><polygon fill="#07090e" points="18,30 28,33 21,36"/><polygon fill="#07090e" points="46,30 36,33 43,36"/><polygon fill="#ffffff" opacity=".3" points="25,39 39,39 32,52"/><polygon fill="#07090e" points="28.5,47 35.5,47 32,52"/></svg><span><small>Wolf Prep</small><b>FL 2-40 Health</b></span></button><select id="ch"></select></div>
-  <nav><button data-v="quiz">Quiz</button><button data-v="exam">Exam</button><button data-v="mist">Mistakes<span id="mbadge" class="badge"></span></button><button data-v="cards">Cards</button><button data-v="stats">Stats</button><button data-v="guides">Guides</button></nav>
+  <nav id="sec"><button data-s="games">🎮 Study Games<span id="mbadge" class="badge"></span></button><button data-s="exams">📝 Exam</button><button data-s="guides">📖 Guides</button><button data-s="stats">📊 Stats</button></nav>
+  <div id="sub" class="sub"></div>
 </div></header>
-<main class="wrap" id="app"><p class="empty">Loading…</p></main>
+<div id="flash"></div><main class="wrap" id="app"><p class="empty">Loading…</p></main>
 <button class="btn" id="toTop" onclick="scrollTo(0,0)">↑ Top</button>
 <script src="marked.min.js"></script>
 <script>
@@ -152,17 +181,29 @@ let examSize=store.get('examSize',50);
 let mist=store.get('mist',null), mcleared=store.get('mcleared',0), mbest=store.get('mbest',0);
 let mround=null, mstreak=0;
 const MASTER=2;
+const SECS={games:{views:[['mist','🔁 Mistakes'],['speed','⚡ Speed'],['match','🧩 Match'],['cards','🃏 Cards']]},exams:{views:[['quiz','🎯 Practice exam'],['exam','⏱️ Real exam']]},guides:{views:[['guides','']]},stats:{views:[['stats','']]}};
+function secOf(v){for(const k in SECS)if(SECS[k].views.some(x=>x[0]===v))return k;return null}
+function navUI(){const sec=secOf(view);if(sec)SECS[sec].last=view;
+  document.querySelectorAll('#sec button').forEach(b=>b.classList.toggle('on',b.dataset.s===sec));
+  const sub=$('#sub'),vs=sec?SECS[sec].views:[];
+  sub.innerHTML=vs.length>1?vs.map(([v,l])=>`<button class="${v===view?'on':''}" onclick="setView('${v}')">${l}${v==='mist'&&Object.keys(mist).length?` <span class="badge">${Object.keys(mist).length}</span>`:''}</button>`).join(''):'';
+  sub.style.display=vs.length>1?'flex':'none';
+  requestAnimationFrame(()=>document.documentElement.style.setProperty('--hh',document.querySelector('header').offsetHeight+'px'))}
+/* instant feedback: full-screen flash + haptic */
+function fx(ok,el){const f=$('#flash');f.className='';void f.offsetWidth;f.className=ok?'ok':'no';
+  try{navigator.vibrate&&navigator.vibrate(ok?18:[70,40,70])}catch(e){}
+  if(el){el.classList.remove('shake','bump');void el.offsetWidth;el.classList.add(ok?'bump':'shake')}}
 function missed(key){mist[key]=0;store.set('mist',mist);badge()}
 function gotRight(key){if(!(key in mist))return false;mist[key]++;let cleared=false;if(mist[key]>=MASTER){delete mist[key];mcleared++;store.set('mcleared',mcleared);cleared=true}store.set('mist',mist);badge();return cleared}
 function mistKeys(){return Object.keys(mist).filter(k=>{const it=mItem(k);return it&&(ch==='all'||it.ch==ch)})}
-function badge(){const n=Object.keys(mist||{}).length;const b=$('#mbadge');if(b)b.textContent=n?n:''}
+function badge(){const n=Object.keys(mist||{}).length;const b=$('#mbadge');if(b)b.textContent=n?n:'';if($('#sub')&&secOf(view)==='games')navUI()}
 let deck=[], idx=0, flipped=false, answered=null, guideOpen=null, tick=null, sessR=0, sessN=0;
 
 fetch('data.json').then(r=>r.json()).then(d=>{D=d;D.questions=D.questions.filter(q=>q.q);D.questions.forEach(q=>QBY[qid(q)]=q);D.terms.forEach(t=>TBY[tid(t)]=t);
   if(!mist){mist={};Object.entries(results).forEach(([k,v])=>{if(v===0)mist['q:'+k]=0});store.set('mist',mist)}badge();
   const s=$('#ch');s.innerHTML='<option value="all">All chapters</option>'+Object.entries(D.titles).map(([n,t])=>`<option value="${n}">Ch ${n}: ${esc(t)}</option>`).join('');
   s.value=ch;s.onchange=()=>{ch=s.value;store.set('ch',ch);guideOpen=null;reset()};
-  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+  document.querySelectorAll('#sec button').forEach(b=>b.onclick=()=>setView(SECS[b.dataset.s].last||SECS[b.dataset.s].views[0][0]));
   reset();
 }).catch(()=>app.innerHTML='<p class="empty">Could not load data. Check your connection and reload.</p>');
 
@@ -170,7 +211,7 @@ const qid=q=>q.ch+'-'+q.n, tid=t=>t.ch+'-'+t.t;
 const inCh=x=>ch==='all'||x.ch==ch;
 function setView(v){view=v;guideOpen=null;reset()}
 function reset(){
-  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+  navUI();
   idx=0;flipped=false;answered=null;sessR=0;sessN=0;clearInterval(tick);
   if(view==='quiz'){let q=D.questions.filter(inCh);if(opts.missed)q=q.filter(x=>results[qid(x)]===0);deck=opts.shuffle?shuffle(q):q}
   if(view==='cards'){let t=D.terms.filter(inCh);if(opts.unknown)t=t.filter(x=>!known[tid(x)]);deck=opts.fshuffle?shuffle(t):t}
@@ -180,7 +221,7 @@ function toggle(k,label){return `<label><input type="checkbox" ${opts[k]?'checke
 function render(){
   document.body.classList.toggle('splash-on',view==='home');
   $('#toTop').style.display=view==='guides'&&guideOpen?'block':'none';
-  ({home:renderHome,dash:renderDash,quiz:renderQuiz,cards:renderCards,guides:renderGuides,exam:renderExam,stats:renderStats,mist:renderMist})[view]();
+  ({home:renderHome,dash:renderDash,speed:renderSpeed,match:renderMatch,quiz:renderQuiz,cards:renderCards,guides:renderGuides,exam:renderExam,stats:renderStats,mist:renderMist})[view]();
 }
 function chStats(n){const pool=D.questions.filter(q=>n==='all'||q.ch==n);let done=0,right=0;pool.forEach(q=>{const r=results[qid(q)];if(r!==undefined){done++;right+=r}});return {total:pool.length,done,right,missed:done-right}}
 function barClass(p){return p>=80?'g':p>=PASS?'':p>=50?'w':'b'}
@@ -188,16 +229,25 @@ function barClass(p){return p>=80?'g':p>=PASS?'':p>=50?'w':'b'}
 /* ---------- Home ---------- */
 const EXAM_AT=Date.parse('2026-11-23T19:00:00Z');
 function renderDash(){
+  const ring=(p,label,sub,col)=>`<div class="ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--line)" stroke-width="3"/><circle class="arc" cx="18" cy="18" r="15.9" fill="none" stroke="${col}" stroke-width="3" stroke-linecap="round" stroke-dasharray="${p} 100" transform="rotate(-90 18 18)"/></svg><b>${label}</b><small>${sub}</small></div>`;
   const all=chStats('all'),last=exams[exams.length-1],nm=Object.keys(mist).length,tk=D.terms.filter(t=>known[tid(t)]).length;
   app.innerHTML=`<div class="dash-h"><div class="eyebrow">Wolf Prep</div><h3>Choose your training</h3><div class="mini" id="cd"></div></div>
-  <div class="kpis"><div><b>${all.done?pct(all.right,all.done)+'%':'–'}</b><small>accuracy</small></div><div><b>${last?last.score+'%':'–'}</b><small>last exam</small></div><div><b>${nm}</b><small>mistakes</small></div></div>
+  <div class="rings">${ring(pct(all.done,all.total),pct(all.done,all.total)+'%','covered','#38bdf8')}${ring(all.done?pct(all.right,all.done):0,all.done?pct(all.right,all.done)+'%':'–','accuracy',all.done&&pct(all.right,all.done)>=PASS?'#4ade80':'#fbbf24')}${ring(pct(tk,D.terms.length),pct(tk,D.terms.length)+'%','cards known','#a78bfa')}</div>
+  <div class="sect">📝 Exam</div>
   <div class="tiles">
-   <button class="tile wide" onclick="setView('exam')"><span class="ic">⏱️</span><span><b>Take a mock exam</b><small>Timed, graded, 70% to pass</small></span></button>
-   <button class="tile" onclick="setView('quiz')"><span class="ic">🎯</span><span><b>Quiz</b><small>${all.done}/${all.total} done</small></span></button>
-   <button class="tile" onclick="setView('mist')">${nm?`<span class="badge">${nm}</span>`:''}<span class="ic">🔁</span><span><b>Mistakes</b><small>${nm?'Clear your misses':'All clear'}</small></span></button>
+   <button class="tile wide" onclick="setView('exam')"><span class="ic">⏱️</span><span><b>Real exam</b><small>Timed, no answers until you submit · ${last?'last '+last.score+'%':'70% to pass'}</small></span></button>
+   <button class="tile" onclick="setView('quiz')" style="grid-column:1/-1;min-height:0;flex-direction:row;justify-content:flex-start;align-items:center;gap:14px"><span class="ic">🎯</span><span><b style="margin:0">Practice exam</b><small>Instant red/green feedback · ${all.done}/${all.total} done</small></span></button>
+  </div>
+  <div class="sect">🎮 Study Games</div>
+  <div class="tiles">
+   <button class="tile" onclick="setView('mist')">${nm?`<span class="badge">${nm}</span>`:''}<span class="ic">🔁</span><span><b>Mistakes</b><small>${nm?nm+' to clear':'All clear'}</small></span></button>
+   <button class="tile" onclick="setView('speed')"><span class="ic">⚡</span><span><b>Speed Round</b><small>60 sec · best ${store.get('speedBest',0)}</small></span></button>
+   <button class="tile" onclick="setView('match')"><span class="ic">🧩</span><span><b>Match</b><small>Pair terms fast${store.get('matchBest',0)?' · best '+store.get('matchBest',0)+'s':''}</small></span></button>
    <button class="tile" onclick="setView('cards')"><span class="ic">🃏</span><span><b>Flashcards</b><small>${tk}/${D.terms.length} known</small></span></button>
-   <button class="tile" onclick="setView('guides')"><span class="ic">📖</span><span><b>Guides</b><small>11 chapters</small></span></button>
-   <button class="tile" onclick="setView('stats')" style="grid-column:1/-1;min-height:0"><span class="ic" style="display:none"></span><span><b style="margin:0">📊 Stats by chapter</b><small>See your weakest chapters</small></span></button>
+  </div>
+  <div class="tiles" style="margin-top:10px">
+   <button class="tile" onclick="setView('guides')" style="min-height:0"><span><b style="margin:0">📖 Guides</b><small>11 chapters</small></span></button>
+   <button class="tile" onclick="setView('stats')" style="min-height:0"><span><b style="margin:0">📊 Stats</b><small>Weakest chapters</small></span></button>
   </div>
   <div class="foot">WOLF PREP · STUDY HARD, HUNT SMART 🐺</div>`;
   runCd();
@@ -224,7 +274,7 @@ function renderHome(){
 /* ---------- Practice ---------- */
 function renderQuiz(){
   const s=chStats(ch);
-  let h=`<div class="toggles">${toggle('shuffle','Shuffle')}${toggle('missed',`Missed only (${s.missed})`)}</div>
+  let h=`<div class="modehead"><b>Practice exam</b> · instant feedback, red/green on every answer</div><div class="toggles">${toggle('shuffle','Shuffle')}${toggle('missed',`Missed only (${s.missed})`)}</div>
   <div class="stats">This session: ${sessR}/${sessN}${sessN?` (${pct(sessR,sessN)}%)`:''} · Overall: ${s.done}/${s.total} answered, ${pct(s.right,s.done)}% right</div>`;
   if(!deck.length){app.innerHTML=h+`<p class="empty">${opts.missed?'No missed questions here. Nice!':'No questions.'}</p>`;return}
   if(idx>=deck.length){app.innerHTML=h+`<div class="card"><p class="q">Set finished: ${sessR}/${sessN} right (${pct(sessR,sessN)}%)</p><p class="stats">${pct(sessR,sessN)>=PASS?'That would pass (70%).':'Below the 70% pass mark. Try "Missed only" next.'}</p><div class="row"><button class="btn pri grow" onclick="reset()">Start again</button>${s.missed?`<button class="btn grow" onclick="opts.missed=true;store.set('opts',opts);reset()">Review missed</button>`:''}</div></div>`;return}
@@ -236,7 +286,7 @@ function renderQuiz(){
   h+=`</div><div class="row"><button class="btn" onclick="go(-1)" ${idx?'':'disabled'}>Back</button><button class="btn pri grow" onclick="go(1)">${answered?'Next':'Skip'}</button></div>`;
   app.innerHTML=h;
 }
-function pick(L){const q=deck[idx];answered=L;const ok=L===q.a?1:0;results[qid(q)]=ok;store.set('results',results);sessN++;sessR+=ok;if(ok)gotRight('q:'+qid(q));else missed('q:'+qid(q));renderQuiz()}
+function pick(L){const q=deck[idx];answered=L;const ok=L===q.a?1:0;fx(ok);results[qid(q)]=ok;store.set('results',results);sessN++;sessR+=ok;if(ok)gotRight('q:'+qid(q));else missed('q:'+qid(q));renderQuiz()}
 function go(d){idx=Math.max(0,idx+d);answered=null;flipped=false;render();scrollTo(0,0)}
 
 /* ---------- Mock exam ---------- */
@@ -255,8 +305,8 @@ function renderExam(){
   if(!exam){
     const pool=D.questions.filter(inCh).length;
     const last=exams.slice(-5).reverse();
-    app.innerHTML=`<div class="card"><p class="q">Mock exam</p>
-    <p class="stats" style="margin:0">Questions mixed from ${ch==='all'?'all chapters':'Chapter '+ch}, no answers shown until you submit, timed at 72 seconds per question (the pace of 100 questions in 2 hours). Pass mark is ${PASS}%.</p>
+    app.innerHTML=`<div class="card"><p class="q">Real exam</p>
+    <p class="stats" style="margin:0">Questions mixed from ${ch==='all'?'all chapters':'Chapter '+ch}, no answers shown until you submit (just like test day), timed at 72 seconds per question (the pace of 100 questions in 2 hours). Pass mark is ${PASS}%.</p>
     <div class="choice">${[25,50,100].map(n=>`<button class="btn ${examSize===n?'on':''}" onclick="examSize=${n};store.set('examSize',${n});renderExam()">${Math.min(n,pool)} Qs<br><span style="font-weight:400;font-size:13px">${fmt(Math.min(n,pool)*72).replace(/:00$/,'')} min</span></button>`).join('')}</div>
     <button class="btn pri" style="width:100%" onclick="startExam()">Start exam</button></div>
     ${last.length?`<div class="card"><p class="q" style="font-size:15px">Recent exams</p>${last.map(e=>`<div class="chrow"><div class="t"><span>${new Date(e.date).toLocaleString([], {weekday:'short',hour:'numeric',minute:'2-digit'})} · ${e.n} Qs</span><span class="tag ${e.score>=PASS?'g':'b'}">${e.score}% ${e.score>=PASS?'PASS':'FAIL'}</span></div></div>`).join('')}</div>`:''}`;
@@ -345,13 +395,61 @@ function renderMist(){
   h+=`</div><div class="row"><button class="btn" onclick="mround=null;renderMist()">Quit</button><button class="btn pri grow" onclick="mNext()" ${r.ans?'':'disabled'}>Next</button></div>`;
   app.innerHTML=h;
 }
-function mPick(L){const r=mround,k=r.keys[r.i],q=r.items[r.i];r.ans=L;
+function mPick(L){const r=mround,k=r.keys[r.i],q=r.items[r.i];r.ans=L;fx(L===q.a);
   if(L===q.a){r.right++;mstreak++;if(mstreak>mbest){mbest=mstreak;store.set('mbest',mbest)}r.justCleared=gotRight(k);if(r.justCleared)r.cleared++;if(k[0]==='q'){results[k.slice(2)]=1;store.set('results',results)}}
   else{mstreak=0;r.justCleared=false;missed(k);if(k[0]==='q'){results[k.slice(2)]=0;store.set('results',results)}else{delete known[k.slice(2)];store.set('known',known)}
     // missed again: bring it back later in this round
     if(r.items.length-r.i<40){r.keys.push(k);r.items.push(k[0]==='q'?q:termQ(TBY[k.slice(2)]))}}
   renderMist()}
 function mNext(){mround.i++;mround.ans=null;renderMist();scrollTo(0,0)}
+
+/* ---------- Speed Round ---------- */
+let sp=null;
+function spNext(){const pool=D.questions.filter(inCh),tp=D.terms.filter(inCh);
+  const useT=Math.random()<.5&&tp.length>3;let it;
+  if(useT){const t=tp[Math.random()*tp.length|0];it={...termQ(t),key:'t:'+tid(t)}}else{const q=pool[Math.random()*pool.length|0];it={...q,key:'q:'+qid(q)}}
+  sp.cur=it;sp.ans=null}
+function renderSpeed(){clearInterval(tick);
+  const best=store.get('speedBest',0);
+  if(!sp||sp.over){const o=sp&&sp.over;
+    app.innerHTML=`<div class="card" style="text-align:center"><div class="ic" style="font-size:44px">⚡</div><p class="q" style="font-size:22px;margin:6px 0">Speed Round</p>
+    ${o?`<div class="big ${sp.score>=best&&sp.score?'pass':''}">${sp.score}</div><p class="stats">${sp.right} right · ${sp.wrong} wrong · best combo x${sp.maxc}${sp.score>=best&&sp.score?' · 🏆 new best!':''}</p>`:`<p class="stats">60 seconds. Questions and terms fire at you. Right answers build a combo multiplier. Every miss goes to your Mistakes deck.</p>`}
+    <p class="stats">Best score: <b class="streak">${best}</b></p><button class="btn pri go" onclick="spStart()">${o?'Play again':'Start'}</button></div>`;return}
+  const q=sp.cur,left=Math.max(0,sp.end-Date.now());
+  let h=`<div class="sphead"><span class="streak">x${Math.min(5,1+Math.floor(sp.combo/3))} 🔥${sp.combo}</span><b>${sp.score}</b><span id="spt">${Math.ceil(left/1000)}s</span></div><div class="tbar"><i id="spbar" style="width:${left/600}%"></i></div>
+  <div class="card ${sp.ans?(sp.ans===q.a?'bump':'shake'):''}"><div class="meta"><span>Ch ${q.ch}${q.term?' · term':''}</span></div><p class="q">${inl(q.q)}</p>`;
+  q.o.forEach((o,i)=>{const L='ABCD'[i];let c='';if(sp.ans){if(L===q.a)c='right';else if(L===sp.ans)c='wrong'}h+=`<button class="opt ${c}" ${sp.ans?'disabled':''} onclick="spPick('${L}')"><b>${L}</b>${inl(o)}</button>`});
+  h+=`</div>`;app.innerHTML=h;
+  tick=setInterval(()=>{const l=Math.max(0,sp.end-Date.now()),t=$('#spt'),b=$('#spbar');if(!t){clearInterval(tick);return}t.textContent=Math.ceil(l/1000)+'s';b.style.width=(l/600)+'%';if(!l){clearInterval(tick);spOver()}},200);
+}
+function spStart(){sp={score:0,right:0,wrong:0,combo:0,maxc:0,end:Date.now()+60000};spNext();renderSpeed()}
+function spPick(L){const q=sp.cur;sp.ans=L;const ok=L===q.a;fx(ok);
+  if(ok){sp.right++;sp.combo++;sp.maxc=Math.max(sp.maxc,sp.combo);sp.score+=Math.min(5,1+Math.floor((sp.combo-1)/3));gotRight(q.key)}else{sp.wrong++;sp.combo=0;missed(q.key)}
+  if(q.key[0]==='q'){results[q.key.slice(2)]=ok?1:0;store.set('results',results)}
+  renderSpeed();setTimeout(()=>{if(!sp||sp.over||view!=='speed')return;if(Date.now()>=sp.end)return spOver();spNext();renderSpeed()},ok?450:1300)}
+function spOver(){if(!sp||sp.over)return;sp.over=true;if(sp.score>store.get('speedBest',0))store.set('speedBest',sp.score);renderSpeed()}
+
+/* ---------- Match ---------- */
+let mt=null;
+function mtStart(){let tp=D.terms.filter(t=>inCh(t)&&t.d.replace(/\*/g,'').length<=110);if(tp.length<5)tp=D.terms.filter(t=>t.d.length<=110);
+  const pick5=shuffle(tp).slice(0,5);
+  const tiles=shuffle([...pick5.map((t,i)=>({id:i,k:'t',txt:t.t})),...pick5.map((t,i)=>({id:i,k:'d',txt:t.d.replace(/\*\*/g,'')}))]);
+  mt={terms:pick5,tiles,sel:null,done:{},start:Date.now(),miss:0};renderMatch()}
+function renderMatch(){clearInterval(tick);const best=store.get('matchBest',0);
+  if(!mt||mt.over){app.innerHTML=`<div class="card" style="text-align:center"><div class="ic" style="font-size:44px">🧩</div><p class="q" style="font-size:22px;margin:6px 0">Match</p>
+   ${mt&&mt.over?`<div class="big pass">${mt.time}s</div><p class="stats">${mt.miss} wrong match${mt.miss===1?'':'es'}${mt.time<=best?' · 🏆 new best!':''}</p>`:'<p class="stats">Tap a term, then its meaning. Clear all 5 pairs as fast as you can. Wrong pairs flash red and the term goes to Mistakes.</p>'}
+   ${best?`<p class="stats">Best time: <b class="streak">${best}s</b></p>`:''}<button class="btn pri go" onclick="mtStart()">${mt&&mt.over?'Play again':'Start'}</button></div>`;return}
+  app.innerHTML=`<div class="sphead"><span>${Object.keys(mt.done).length}/5 pairs</span><b id="mtt">0.0s</b><span>${mt.miss} ✗</span></div>
+  <div class="mgrid">${mt.tiles.map((t,i)=>`<button class="mt ${t.k} ${mt.done[t.id]?'gone':''} ${mt.sel===i?'sel':''}" id="mt${i}" onclick="mtTap(${i})">${esc(t.txt)}</button>`).join('')}</div>`;
+  tick=setInterval(()=>{const e=$('#mtt');if(!e){clearInterval(tick);return}e.textContent=((Date.now()-mt.start)/1000).toFixed(1)+'s'},100);
+}
+function mtTap(i){const t=mt.tiles[i];if(mt.done[t.id])return;
+  if(mt.sel===null||mt.tiles[mt.sel].k===t.k){mt.sel=i;document.querySelectorAll('.mt').forEach((b,j)=>b.classList.toggle('sel',j===i));return}
+  const a=mt.tiles[mt.sel],ea=$('#mt'+mt.sel),eb=$('#mt'+i);const term=mt.terms[(a.k==='t'?a:t).id];
+  if(a.id===t.id){fx(true);mt.done[t.id]=1;ea.classList.add('right','gone');eb.classList.add('right','gone');gotRight('t:'+tid(term));mt.sel=null;
+    if(Object.keys(mt.done).length===5){mt.over=true;mt.time=+((Date.now()-mt.start)/1000).toFixed(1);const b=store.get('matchBest',0);if(!b||mt.time<b)store.set('matchBest',mt.time);clearInterval(tick);setTimeout(renderMatch,500)}}
+  else{fx(false);mt.miss++;missed('t:'+tid(term));[ea,eb].forEach(e=>{e.classList.add('wrong','shake');setTimeout(()=>e.classList.remove('wrong','shake','sel'),600)});mt.sel=null}
+}
 
 /* ---------- Flashcards ---------- */
 function renderCards(){
