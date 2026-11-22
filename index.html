@@ -4,19 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1d4ed8">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>FL 2-40 Health Study</title>
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--text:#16181d;--muted:#5d6470;--line:#e2e5ea;--accent:#1d4ed8;--accent-soft:#e8eefc;--good:#15803d;--good-soft:#e5f6ea;--bad:#b91c1c;--bad-soft:#fde8e8}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--card:#181b21;--text:#eceef2;--muted:#9aa1ad;--line:#2a2f38;--accent:#7aa2ff;--accent-soft:#1d2740;--good:#4ade80;--good-soft:#123222;--bad:#f87171;--bad-soft:#3a1717}}
+:root{--bg:#f6f7f9;--card:#fff;--text:#16181d;--muted:#5d6470;--line:#e2e5ea;--accent:#1d4ed8;--accent-soft:#e8eefc;--good:#15803d;--good-soft:#e5f6ea;--bad:#b91c1c;--bad-soft:#fde8e8;--warn:#b45309;--warn-soft:#fdf1e1}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--card:#181b21;--text:#eceef2;--muted:#9aa1ad;--line:#2a2f38;--accent:#7aa2ff;--accent-soft:#1d2740;--good:#4ade80;--good-soft:#123222;--bad:#f87171;--bad-soft:#3a1717;--warn:#fbbf24;--warn-soft:#3a2c10}}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
 header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 0 0}
 .wrap{max-width:720px;margin:0 auto;padding:0 16px}
 .top{display:flex;align-items:center;gap:8px;padding:10px 0 6px}
-.top h1{font-size:17px;margin:0;flex:1}
-select{font:inherit;font-size:15px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);max-width:55vw}
-nav{display:flex;gap:4px;padding-bottom:8px}
-nav button{flex:1;font:inherit;font-weight:600;font-size:15px;padding:9px 4px;border:0;border-radius:10px;background:transparent;color:var(--muted)}
+.top h1{font-size:17px;margin:0;flex:1;white-space:nowrap}
+select{font:inherit;font-size:15px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);max-width:58vw}
+nav{display:flex;gap:2px;padding-bottom:8px}
+nav button{flex:1;font:inherit;font-weight:600;font-size:14px;padding:9px 2px;border:0;border-radius:10px;background:transparent;color:var(--muted)}
 nav button.on{background:var(--accent-soft);color:var(--accent)}
 main{padding:14px 0 90px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
@@ -24,14 +25,16 @@ main{padding:14px 0 90px}
 .q{font-size:17px;font-weight:600;margin:0 0 12px}
 .opt{display:block;width:100%;text-align:left;font:inherit;padding:12px 14px;margin:8px 0;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--text)}
 .opt b{color:var(--muted);margin-right:6px}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
 .opt.right{border-color:var(--good);background:var(--good-soft)}
 .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
 .why{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);font-size:15px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .btn{font:inherit;font-weight:600;padding:11px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.btn:disabled{opacity:.45}
 .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
 @media (prefers-color-scheme:dark){.btn.pri{color:#0f1115}}
-.btn.grow{flex:1}
+.btn.grow{flex:1}.btn.sm{padding:7px 12px;font-size:14px}
 .toggles{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-bottom:12px}
 .toggles label{display:flex;align-items:center;gap:6px}
 .toggles input{width:18px;height:18px}
@@ -50,16 +53,39 @@ main{padding:14px 0 90px}
 .guide th{background:var(--accent-soft)}
 .tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:10px 0}
 .guide blockquote{margin:10px 0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
-.guide code{font-size:14px}
 .back{margin-bottom:10px}
 .empty{color:var(--muted);text-align:center;padding:30px 0}
 #toTop{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));display:none}
+.timer{position:sticky;top:96px;z-index:4;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;margin-bottom:12px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-weight:600;font-variant-numeric:tabular-nums}
+.timer.low{color:var(--bad);border-color:var(--bad)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin-top:10px}
+.grid button{font:inherit;font-size:13px;padding:7px 0;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--muted)}
+.grid button.done{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-soft)}
+.grid button.flag{border-color:var(--warn);color:var(--warn)}
+.grid button.cur{outline:2px solid var(--accent)}
+.grid button.right{background:var(--good-soft);color:var(--good);border-color:var(--good-soft)}
+.grid button.wrong{background:var(--bad-soft);color:var(--bad);border-color:var(--bad-soft)}
+.big{font-size:44px;font-weight:800;line-height:1.1;margin:4px 0}
+.pass{color:var(--good)}.fail{color:var(--bad)}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.bar i.g{background:var(--good)}.bar i.w{background:var(--warn)}.bar i.b{background:var(--bad)}
+.chrow{padding:12px 0;border-bottom:1px solid var(--line)}
+.chrow:last-child{border-bottom:0}
+.chrow .t{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.chrow .s{font-size:13px;color:var(--muted)}
+.choice{display:flex;gap:8px;margin:10px 0 14px}
+.choice .btn{flex:1;padding:12px 4px}
+.choice .btn.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warn-soft);color:var(--warn)}
+ul.tight{margin:6px 0;padding-left:20px}
 </style>
 </head>
 <body>
 <header><div class="wrap">
   <div class="top"><h1>FL 2-40 Health</h1><select id="ch"></select></div>
-  <nav><button data-v="quiz" class="on">Quiz</button><button data-v="cards">Flashcards</button><button data-v="guides">Guides</button></nav>
+  <nav><button data-v="quiz">Practice</button><button data-v="exam">Exam</button><button data-v="cards">Cards</button><button data-v="stats">Progress</button><button data-v="guides">Guides</button></nav>
 </div></header>
 <main class="wrap" id="app"><p class="empty">Loading…</p></main>
 <button class="btn" id="toTop" onclick="scrollTo(0,0)">↑ Top</button>
@@ -70,70 +96,166 @@ const store={get(k,d){try{return JSON.parse(localStorage.getItem('fl240:'+k))??d
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const inl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>');
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-let D, view=store.get('view','quiz'), ch=store.get('ch','all');
-let results=store.get('results',{}), known=store.get('known',{});
-let opts=store.get('opts',{shuffle:false,missed:false,unknown:false,fshuffle:true});
-let deck=[], idx=0, flipped=false, answered=null, guideOpen=null;
+const pct=(a,b)=>b?Math.round(100*a/b):0;
+const PASS=70;
+let D, QBY={}, view=store.get('view','quiz'), ch=store.get('ch','all');
+let results=store.get('results',{}), known=store.get('known',{}), exams=store.get('exams',[]), exam=store.get('exam',null);
+let opts=store.get('opts',{shuffle:true,missed:false,unknown:false,fshuffle:true});
+let examSize=store.get('examSize',50);
+let deck=[], idx=0, flipped=false, answered=null, guideOpen=null, tick=null, sessR=0, sessN=0;
 
-fetch('data.json').then(r=>r.json()).then(d=>{D=d;D.questions=D.questions.filter(q=>q.q);
+fetch('data.json').then(r=>r.json()).then(d=>{D=d;D.questions=D.questions.filter(q=>q.q);D.questions.forEach(q=>QBY[qid(q)]=q);
   const s=$('#ch');s.innerHTML='<option value="all">All chapters</option>'+Object.entries(D.titles).map(([n,t])=>`<option value="${n}">Ch ${n}: ${esc(t)}</option>`).join('');
   s.value=ch;s.onchange=()=>{ch=s.value;store.set('ch',ch);guideOpen=null;reset()};
-  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{view=b.dataset.v;store.set('view',view);guideOpen=null;reset()});
+  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
   reset();
 }).catch(()=>app.innerHTML='<p class="empty">Could not load data. Check your connection and reload.</p>');
 
 const qid=q=>q.ch+'-'+q.n, tid=t=>t.ch+'-'+t.t;
+const inCh=x=>ch==='all'||x.ch==ch;
+function setView(v){view=v;store.set('view',v);guideOpen=null;reset()}
 function reset(){
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
-  idx=0;flipped=false;answered=null;
-  if(view==='quiz'){let q=D.questions.filter(q=>ch==='all'||q.ch==ch);if(opts.missed)q=q.filter(x=>results[qid(x)]===0);deck=opts.shuffle?shuffle(q):q}
-  if(view==='cards'){let t=D.terms.filter(t=>ch==='all'||t.ch==ch);if(opts.unknown)t=t.filter(x=>!known[tid(x)]);deck=opts.fshuffle?shuffle(t):t}
+  idx=0;flipped=false;answered=null;sessR=0;sessN=0;clearInterval(tick);
+  if(view==='quiz'){let q=D.questions.filter(inCh);if(opts.missed)q=q.filter(x=>results[qid(x)]===0);deck=opts.shuffle?shuffle(q):q}
+  if(view==='cards'){let t=D.terms.filter(inCh);if(opts.unknown)t=t.filter(x=>!known[tid(x)]);deck=opts.fshuffle?shuffle(t):t}
   render();scrollTo(0,0);
 }
 function toggle(k,label){return `<label><input type="checkbox" ${opts[k]?'checked':''} onchange="opts.${k}=this.checked;store.set('opts',opts);reset()">${label}</label>`}
 function render(){
   $('#toTop').style.display=view==='guides'&&guideOpen?'block':'none';
-  if(view==='quiz')return renderQuiz();
-  if(view==='cards')return renderCards();
-  renderGuides();
+  ({quiz:renderQuiz,cards:renderCards,guides:renderGuides,exam:renderExam,stats:renderStats})[view]();
 }
-function quizStats(){const pool=D.questions.filter(q=>ch==='all'||q.ch==ch);let done=0,right=0;pool.forEach(q=>{const r=results[qid(q)];if(r!==undefined){done++;right+=r}});return `${done}/${pool.length} answered · ${done?Math.round(100*right/done):0}% right`}
+function chStats(n){const pool=D.questions.filter(q=>n==='all'||q.ch==n);let done=0,right=0;pool.forEach(q=>{const r=results[qid(q)];if(r!==undefined){done++;right+=r}});return {total:pool.length,done,right,missed:done-right}}
+function barClass(p){return p>=80?'g':p>=PASS?'':p>=50?'w':'b'}
+
+/* ---------- Practice ---------- */
 function renderQuiz(){
-  let h=`<div class="toggles">${toggle('shuffle','Shuffle')}${toggle('missed','Missed only')}</div><div class="stats">${quizStats()}</div>`;
+  const s=chStats(ch);
+  let h=`<div class="toggles">${toggle('shuffle','Shuffle')}${toggle('missed',`Missed only (${s.missed})`)}</div>
+  <div class="stats">This session: ${sessR}/${sessN}${sessN?` (${pct(sessR,sessN)}%)`:''} · Overall: ${s.done}/${s.total} answered, ${pct(s.right,s.done)}% right</div>`;
   if(!deck.length){app.innerHTML=h+`<p class="empty">${opts.missed?'No missed questions here. Nice!':'No questions.'}</p>`;return}
-  if(idx>=deck.length){app.innerHTML=h+`<div class="card"><p class="q">End of this set.</p><div class="row"><button class="btn pri grow" onclick="reset()">Start again</button></div></div>`;return}
+  if(idx>=deck.length){app.innerHTML=h+`<div class="card"><p class="q">Set finished: ${sessR}/${sessN} right (${pct(sessR,sessN)}%)</p><p class="stats">${pct(sessR,sessN)>=PASS?'That would pass (70%).':'Below the 70% pass mark. Try "Missed only" next.'}</p><div class="row"><button class="btn pri grow" onclick="reset()">Start again</button>${s.missed?`<button class="btn grow" onclick="opts.missed=true;store.set('opts',opts);reset()">Review missed</button>`:''}</div></div>`;return}
   const q=deck[idx];
-  h+=`<div class="card"><div class="meta"><span>Ch ${q.ch} · Q${q.n}</span><span>${idx+1} of ${deck.length}</span></div><p class="q">${inl(q.q)}</p>`;
+  h+=`<div class="card"><div class="meta"><span>Ch ${q.ch} · Q${q.n}${results[qid(q)]===0?' · <span class="tag b">missed before</span>':''}</span><span>${idx+1} of ${deck.length}</span></div><p class="q">${inl(q.q)}</p>`;
   q.o.forEach((o,i)=>{const L='ABCD'[i];let c='';if(answered){if(L===q.a)c='right';else if(L===answered)c='wrong'}
     h+=`<button class="opt ${c}" ${answered?'disabled':''} onclick="pick('${L}')"><b>${L}</b>${inl(o)}</button>`});
   if(answered)h+=`<div class="why"><b>${answered===q.a?'Correct.':'Answer: '+esc(q.af)+'.'}</b> ${inl(q.w)}</div>`;
   h+=`</div><div class="row"><button class="btn" onclick="go(-1)" ${idx?'':'disabled'}>Back</button><button class="btn pri grow" onclick="go(1)">${answered?'Next':'Skip'}</button></div>`;
   app.innerHTML=h;
 }
-function pick(L){const q=deck[idx];answered=L;results[qid(q)]=L===q.a?1:0;store.set('results',results);renderQuiz()}
+function pick(L){const q=deck[idx];answered=L;const ok=L===q.a?1:0;results[qid(q)]=ok;store.set('results',results);sessN++;sessR+=ok;renderQuiz()}
 function go(d){idx=Math.max(0,idx+d);answered=null;flipped=false;render();scrollTo(0,0)}
+
+/* ---------- Mock exam ---------- */
+function startExam(){
+  const pool=D.questions.filter(inCh);const n=Math.min(examSize,pool.length);
+  // spread across chapters: shuffle then take
+  const qs=shuffle(pool).slice(0,n).map(qid);
+  exam={qs,ans:{},flags:{},cur:0,start:Date.now(),limit:Math.round(n*72),ch,done:false};
+  store.set('exam',exam);renderExam();scrollTo(0,0);
+}
+function left(){return Math.max(0,Math.round(exam.limit-(Date.now()-exam.start)/1000))}
+const fmt=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+function renderExam(){
+  clearInterval(tick);
+  if(exam&&exam.done)return renderResult(exam);
+  if(!exam){
+    const pool=D.questions.filter(inCh).length;
+    const last=exams.slice(-5).reverse();
+    app.innerHTML=`<div class="card"><p class="q">Mock exam</p>
+    <p class="stats" style="margin:0">Questions mixed from ${ch==='all'?'all chapters':'Chapter '+ch}, no answers shown until you submit, timed at 72 seconds per question (the pace of 100 questions in 2 hours). Pass mark is ${PASS}%.</p>
+    <div class="choice">${[25,50,100].map(n=>`<button class="btn ${examSize===n?'on':''}" onclick="examSize=${n};store.set('examSize',${n});renderExam()">${Math.min(n,pool)} Qs<br><span style="font-weight:400;font-size:13px">${fmt(Math.min(n,pool)*72).replace(/:00$/,'')} min</span></button>`).join('')}</div>
+    <button class="btn pri" style="width:100%" onclick="startExam()">Start exam</button></div>
+    ${last.length?`<div class="card"><p class="q" style="font-size:15px">Recent exams</p>${last.map(e=>`<div class="chrow"><div class="t"><span>${new Date(e.date).toLocaleString([], {weekday:'short',hour:'numeric',minute:'2-digit'})} · ${e.n} Qs</span><span class="tag ${e.score>=PASS?'g':'b'}">${e.score}% ${e.score>=PASS?'PASS':'FAIL'}</span></div></div>`).join('')}</div>`:''}`;
+    return;
+  }
+  if(left()<=0)return submitExam();
+  const q=QBY[exam.qs[exam.cur]], a=exam.ans[exam.qs[exam.cur]], nAns=Object.keys(exam.ans).length;
+  let h=`<div class="timer ${left()<300?'low':''}"><span id="tleft">⏱ ${fmt(left())}</span><span>${nAns}/${exam.qs.length} answered</span><button class="btn sm" onclick="confirmSubmit()">Submit</button></div>
+  <div class="card"><div class="meta"><span>Question ${exam.cur+1} of ${exam.qs.length}</span><span><a href="#" onclick="flag();return false" style="color:var(--warn)">${exam.flags[exam.qs[exam.cur]]?'⚑ Flagged':'⚐ Flag for review'}</a></span></div><p class="q">${inl(q.q)}</p>`;
+  q.o.forEach((o,i)=>{const L='ABCD'[i];h+=`<button class="opt ${a===L?'sel':''}" onclick="exPick('${L}')"><b>${L}</b>${inl(o)}</button>`});
+  h+=`</div><div class="row"><button class="btn" onclick="exGo(-1)" ${exam.cur?'':'disabled'}>Back</button><button class="btn pri grow" onclick="${exam.cur<exam.qs.length-1?'exGo(1)':'confirmSubmit()'}">${exam.cur<exam.qs.length-1?'Next':'Finish & grade'}</button></div>
+  <div class="card" style="margin-top:12px"><div class="stats" style="margin:0">Jump to a question (blue = answered, orange = flagged)</div><div class="grid">${exam.qs.map((id,i)=>`<button class="${exam.ans[id]?'done':''} ${exam.flags[id]?'flag':''} ${i===exam.cur?'cur':''}" onclick="exam.cur=${i};store.set('exam',exam);renderExam()">${i+1}</button>`).join('')}</div>
+  <p class="stats" style="margin:12px 0 0"><a href="#" style="color:var(--muted)" onclick="if(confirm('Quit this exam without grading?')){exam=null;store.set('exam',null);renderExam()}return false">Quit exam</a></p></div>`;
+  app.innerHTML=h;
+  tick=setInterval(()=>{const s=left();const el=$('#tleft');if(!el){clearInterval(tick);return}el.textContent='⏱ '+fmt(s);if(s<300)el.parentNode.classList.add('low');if(s<=0){clearInterval(tick);submitExam()}},1000);
+}
+function exPick(L){const id=exam.qs[exam.cur];exam.ans[id]=L;store.set('exam',exam);
+  if(exam.cur<exam.qs.length-1){exam.cur++;store.set('exam',exam);setTimeout(()=>{renderExam();scrollTo(0,0)},180);app.querySelectorAll('.opt').forEach(b=>b.classList.toggle('sel',b.textContent.trim().startsWith(L)))}else renderExam()}
+function exGo(d){exam.cur=Math.max(0,Math.min(exam.qs.length-1,exam.cur+d));store.set('exam',exam);renderExam();scrollTo(0,0)}
+function flag(){const id=exam.qs[exam.cur];if(exam.flags[id])delete exam.flags[id];else exam.flags[id]=1;store.set('exam',exam);renderExam()}
+function confirmSubmit(){const un=exam.qs.length-Object.keys(exam.ans).length,fl=Object.keys(exam.flags).length;
+  if(confirm(`Submit for grading?${un?`\n${un} unanswered (counted wrong).`:''}${fl?`\n${fl} flagged.`:''}`))submitExam()}
+function submitExam(){
+  clearInterval(tick);let right=0;const byCh={};
+  exam.qs.forEach(id=>{const q=QBY[id],ok=exam.ans[id]===q.a?1:0;right+=ok;(byCh[q.ch]=byCh[q.ch]||[0,0]);byCh[q.ch][0]+=ok;byCh[q.ch][1]++;if(exam.ans[id])results[id]=ok});
+  store.set('results',results);
+  exam.done=true;exam.score=pct(right,exam.qs.length);exam.right=right;exam.byCh=byCh;exam.used=Math.min(exam.limit,Math.round((Date.now()-exam.start)/1000));
+  exams.push({date:Date.now(),n:exam.qs.length,score:exam.score,right});store.set('exams',exams);store.set('exam',exam);
+  renderResult(exam);scrollTo(0,0);
+}
+function renderResult(e){
+  const wrong=e.qs.filter(id=>e.ans[id]!==QBY[id].a), ok=e.score>=PASS;
+  let h=`<div class="card" style="text-align:center"><div class="stats" style="margin:0">Mock exam result</div><div class="big ${ok?'pass':'fail'}">${e.score}%</div>
+  <div><span class="tag ${ok?'g':'b'}" style="font-size:14px">${ok?'PASS':'FAIL'}</span></div>
+  <p class="stats" style="margin:10px 0 0">${e.right} of ${e.qs.length} right · pass mark ${PASS}% (${Math.ceil(e.qs.length*PASS/100)} right) · time used ${fmt(e.used)}</p></div>
+  <div class="card"><p class="q" style="font-size:15px">By chapter</p>${Object.keys(e.byCh).map(Number).sort((a,b)=>pct(e.byCh[a][0],e.byCh[a][1])-pct(e.byCh[b][0],e.byCh[b][1])).map(n=>{const [r,t]=e.byCh[n],p=pct(r,t);return `<div class="chrow"><div class="t"><span>Ch ${n}: ${esc(D.titles[n])}</span><b>${r}/${t}</b></div><div class="bar"><i class="${barClass(p)}" style="width:${p}%"></i></div></div>`}).join('')}</div>
+  <div class="row" style="margin-bottom:12px"><button class="btn pri grow" onclick="exam=null;store.set('exam',null);renderExam();scrollTo(0,0)">New exam</button>${wrong.length?`<button class="btn grow" onclick="opts.missed=true;store.set('opts',opts);setView('quiz')">Drill missed</button>`:''}</div>`;
+  if(wrong.length){h+=`<p class="q" style="font-size:15px">Review your ${wrong.length} wrong answer${wrong.length>1?'s':''}</p>`;
+    wrong.forEach(id=>{const q=QBY[id],a=e.ans[id];h+=`<div class="card"><div class="meta"><span>Ch ${q.ch} · Q${q.n}</span><span>${a?'You chose '+a:'Unanswered'}</span></div><p class="q" style="font-size:16px">${inl(q.q)}</p>`;
+      q.o.forEach((o,i)=>{const L='ABCD'[i];if(L===q.a||L===a)h+=`<div class="opt ${L===q.a?'right':'wrong'}"><b>${L}</b>${inl(o)}</div>`});
+      h+=`<div class="why">${inl(q.w)}</div></div>`})}
+  app.innerHTML=h;
+}
+
+/* ---------- Flashcards ---------- */
 function renderCards(){
-  const pool=D.terms.filter(t=>ch==='all'||t.ch==ch),k=pool.filter(t=>known[tid(t)]).length;
-  let h=`<div class="toggles">${toggle('fshuffle','Shuffle')}${toggle('unknown','Hide ones I know')}</div><div class="stats">${k}/${pool.length} marked known</div>`;
+  const pool=D.terms.filter(inCh),k=pool.filter(t=>known[tid(t)]).length;
+  let h=`<div class="toggles">${toggle('fshuffle','Shuffle')}${toggle('unknown','Hide ones I know')}</div><div class="stats">${k}/${pool.length} known · "Again" cards come back a few cards later</div>`;
   if(!deck.length){app.innerHTML=h+`<p class="empty">You know every card here. <button class="btn" onclick="clearKnown()">Reset</button></p>`;return}
   if(idx>=deck.length){app.innerHTML=h+`<div class="card"><p class="q">End of the deck.</p><button class="btn pri" onclick="reset()">Go again</button></div>`;return}
   const t=deck[idx];
-  h+=`<div class="card flash" onclick="flipped=!flipped;renderCards()"><div class="meta"><span>Ch ${t.ch}</span><span>${idx+1} of ${deck.length}</span></div><div class="term">${inl(t.t)}</div>${flipped?`<div class="def">${inl(t.d)}</div>`:'<div class="hint">Tap to show the meaning</div>'}</div>
+  h+=`<div class="card flash" onclick="flipped=!flipped;renderCards()"><div class="meta"><span>Ch ${t.ch}${known[tid(t)]?' · <span class="tag g">known</span>':''}</span><span>${idx+1} of ${deck.length}</span></div><div class="term">${inl(t.t)}</div>${flipped?`<div class="def">${inl(t.d)}</div>`:'<div class="hint">Tap to show the meaning</div>'}</div>
   <div class="row"><button class="btn" onclick="go(-1)" ${idx?'':'disabled'}>Back</button><button class="btn grow" onclick="mark(0)">Again</button><button class="btn pri grow" onclick="mark(1)">Got it</button></div>
   <p class="stats" style="margin-top:14px"><a href="#" onclick="clearKnown();return false" style="color:var(--muted)">Reset known cards</a></p>`;
   app.innerHTML=h;
 }
-function mark(v){const t=deck[idx];if(v)known[tid(t)]=1;else delete known[tid(t)];store.set('known',known);go(1)}
+function mark(v){const t=deck[idx];if(v)known[tid(t)]=1;else{delete known[tid(t)];deck.splice(Math.min(deck.length,idx+5),0,t)}store.set('known',known);go(1)}
 function clearKnown(){known={};store.set('known',known);reset()}
+
+/* ---------- Progress ---------- */
+function renderStats(){
+  const all=chStats('all');const tk=D.terms.filter(t=>known[tid(t)]).length;
+  const chs=Object.keys(D.titles).map(Number);
+  const rows=chs.map(n=>{const s=chStats(n),tp=D.terms.filter(t=>t.ch==n),tkn=tp.filter(t=>known[tid(t)]).length;return {n,s,tkn,tt:tp.length,p:pct(s.right,s.done),cov:pct(s.done,s.total)}});
+  const weak=rows.filter(r=>r.s.done>=3).sort((a,b)=>a.p-b.p).slice(0,3).filter(r=>r.p<80);
+  const untouched=rows.filter(r=>!r.s.done);
+  const last=exams[exams.length-1];
+  let h=`<div class="card"><div class="row" style="justify-content:space-around;text-align:center">
+    <div><div class="big" style="font-size:30px">${pct(all.right,all.done)}%</div><div class="stats" style="margin:0">practice accuracy</div></div>
+    <div><div class="big" style="font-size:30px">${all.done}/${all.total}</div><div class="stats" style="margin:0">questions done</div></div>
+    <div><div class="big" style="font-size:30px">${last?last.score+'%':'–'}</div><div class="stats" style="margin:0">last exam</div></div></div>
+    <p class="stats" style="margin:12px 0 0">${tk}/${D.terms.length} flashcards known · ${all.missed} questions currently missed</p></div>`;
+  if(weak.length||untouched.length){h+=`<div class="card"><p class="q" style="font-size:15px">Focus next</p><ul class="tight">${weak.map(r=>`<li><a href="#" onclick="goCh(${r.n},'quiz');return false">Ch ${r.n}: ${esc(D.titles[r.n])}</a> (${r.p}% right)</li>`).join('')}${untouched.map(r=>`<li><a href="#" onclick="goCh(${r.n},'quiz');return false">Ch ${r.n}: ${esc(D.titles[r.n])}</a> (not started)</li>`).join('')}</ul></div>`}
+  h+=`<div class="card"><p class="q" style="font-size:15px">By chapter</p>${rows.map(r=>`<div class="chrow"><div class="t"><a href="#" onclick="goCh(${r.n},'quiz');return false" style="color:var(--text)">Ch ${r.n}: ${esc(D.titles[r.n])}</a><b>${r.s.done?r.p+'%':'–'}</b></div>
+   <div class="bar"><i class="${r.s.done?barClass(r.p):''}" style="width:${r.s.done?r.p:0}%"></i></div>
+   <div class="s">${r.s.done}/${r.s.total} questions · ${r.s.missed} missed · ${r.tkn}/${r.tt} cards known</div></div>`).join('')}</div>`;
+  if(exams.length)h+=`<div class="card"><p class="q" style="font-size:15px">Exam history</p>${exams.slice().reverse().map(e=>`<div class="chrow"><div class="t"><span>${new Date(e.date).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})} · ${e.n} Qs</span><span class="tag ${e.score>=PASS?'g':'b'}">${e.score}%</span></div></div>`).join('')}</div>`;
+  h+=`<p class="stats"><a href="#" style="color:var(--muted)" onclick="if(confirm('Erase all quiz, card and exam progress?')){results={};known={};exams=[];exam=null;['results','known','exams','exam'].forEach(k=>store.set(k,k==='exam'?null:k==='exams'?[]:{}));renderStats()}return false">Reset all progress</a></p>`;
+  app.innerHTML=h;
+}
+function goCh(n,v){ch=String(n);store.set('ch',ch);$('#ch').value=ch;setView(v)}
+
+/* ---------- Guides ---------- */
 function renderGuides(){
   if(guideOpen){app.innerHTML=`<button class="btn back" onclick="guideOpen=null;render();scrollTo(0,0)">← All guides</button><div class="card guide"><p class="empty">Loading guide…</p></div>`;
     fetch(D.guides[guideOpen]).then(r=>r.text()).then(md=>{const el=app.querySelector('.guide');el.innerHTML=marked.parse(md);
       el.querySelectorAll('table').forEach(t=>{const w=document.createElement('div');w.className='tbl';t.parentNode.insertBefore(w,t);w.appendChild(t)})});
     return}
   const list=Object.keys(D.guides).map(Number).sort((a,b)=>a-b).filter(n=>ch==='all'||n==ch);
-  app.innerHTML=`<div class="card glist">${list.map(n=>`<a href="#" onclick="guideOpen=${n};render();scrollTo(0,0);return false"><b>Chapter ${n}</b><br><span style="color:var(--muted)">${esc(D.titles[n])}</span></a>`).join('')}</div><p class="stats">Practice question progress: ${quizStats()}. <a href="#" style="color:var(--muted)" onclick="if(confirmReset())reset();return false">Reset quiz progress</a></p>`;
+  app.innerHTML=`<div class="card glist">${list.map(n=>`<a href="#" onclick="guideOpen=${n};render();scrollTo(0,0);return false"><b>Chapter ${n}</b><br><span style="color:var(--muted)">${esc(D.titles[n])}</span></a>`).join('')}</div>`;
 }
-function confirmReset(){results={};store.set('results',results);return true}
 </script>
 </body>
 </html>
